@@ -1,8 +1,9 @@
 package org.example.post.controller;
 
+import org.example.global.response.ApiResponse;
 import org.example.post.controller.dto.request.CreatePostRequest;
-import org.example.post.controller.dto.response.CreatePostResponse;
 import org.example.post.controller.dto.response.PostResponse;
+import org.example.post.exception.PostNotFoundException;
 import org.example.post.service.PostService;
 
 import java.util.List;
@@ -11,18 +12,22 @@ public class PostController {
     private final PostService postService = new PostService();
 
     // POST /posts
-    public CreatePostResponse createPost(CreatePostRequest request) {
+    public ApiResponse<PostResponse> createPost(CreatePostRequest request) {
         try {
-            return postService.createPost(request);
-        } catch (IllegalArgumentException e) {
-            return new CreatePostResponse(null, "🚫 " + e.getMessage());
+            PostResponse response = postService.createPost(request);
+            return ApiResponse.success("게시글 등록 완료!", response);
+        } catch (PostNotFoundException e) {
+            return ApiResponse.failure(e.getMessage());
         }
     }
 
     // GET /posts 📝 과제
     public List<PostResponse> getAllPosts() {
-        // TODO: postService.getAllPosts() 호출해서 반환
-        return null;
+        try {
+            return postService.getAllPosts();
+        } catch (PostNotFoundException e) {
+            return null;
+        }
     }
 
     // GET /posts/{id} 📝 과제

@@ -1,8 +1,8 @@
 package org.example;
 
+import org.example.global.response.ApiResponse;
 import org.example.post.controller.PostController;
 import org.example.post.controller.dto.request.CreatePostRequest;
-import org.example.post.controller.dto.response.CreatePostResponse;
 import org.example.post.controller.dto.response.PostResponse;
 
 import java.util.List;
@@ -36,11 +36,11 @@ public class Main {
                     String content = scanner.nextLine();
                     System.out.print("작성자: ");
                     String author = scanner.nextLine();
-                    // 클라이언트가 요청 객체를 만들어서 Controller에 전달
-                    CreatePostResponse response = postController.createPost(
+
+                    ApiResponse<PostResponse> createResponse = postController.createPost(
                             new CreatePostRequest(title, content, author)
                     );
-                    System.out.println(response.message);
+                    System.out.println(createResponse.getMessage());
                     break;
 
                 case 2:
