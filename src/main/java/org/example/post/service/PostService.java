@@ -2,7 +2,7 @@ package org.example.post.service;
 
 
 import org.example.post.controller.dto.request.CreatePostRequest;
-import org.example.post.controller.dto.response.CreatePostResponse;
+import org.example.post.controller.dto.response.PostResponse;
 import org.example.post.domain.Post;
 import org.example.post.repository.PostRepository;
 
@@ -12,22 +12,22 @@ public class PostService {
     private final PostRepository postRepository = new PostRepository();
 
     // CREATE
-    public CreatePostResponse createPost(CreatePostRequest request) {
+    public PostResponse createPost(CreatePostRequest request) {
         request.validate();
         String createdAt = java.time.LocalDateTime.now().toString();
         Post post = new Post(postRepository.generateId(), request.title(), request.content(), request.author(), createdAt);
         postRepository.save(post);
-        return new CreatePostResponse(post.getId(), "게시글 등록 완료!");
+        return new PostResponse(post);
     }
 
     // READ - 전체 📝 과제
-    public List<CreatePostResponse> getAllPosts() {
+    public List<PostResponse> getAllPosts() {
         // TODO
         return null;
     }
 
     // READ - 단건 📝 과제
-    public CreatePostResponse getPost(Long id) {
+    public PostResponse getPost(Long id) {
         // TODO
         return null;
     }
