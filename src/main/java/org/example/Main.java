@@ -44,7 +44,13 @@ public class Main {
                     break;
 
                 case 2:
-                    List<PostResponse> posts = postController.getAllPosts();
+                    ApiResponse<List<PostResponse>> allPostsResponse = postController.getAllPosts();
+                    if (!allPostsResponse.isSuccess()) {
+                        System.out.println("에러: " + allPostsResponse.getMessage());
+                        break;
+                    }
+
+                    List<PostResponse> posts = allPostsResponse.getData();
                     if (posts.isEmpty()) {
                         System.out.println("등록된 게시글이 없습니다.");
                     } else {

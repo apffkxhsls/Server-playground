@@ -22,9 +22,9 @@ public class PostController {
     }
 
     // GET /posts 📝 과제
-    public List<PostResponse> getAllPosts() {
+    public ApiResponse<List<PostResponse>> getAllPosts() {
         try {
-            return postService.getAllPosts();
+            return ApiResponse.success("게시글 목록 조회 성공", postService.getAllPosts());
         } catch (PostNotFoundException e) {
             return null;
         }
