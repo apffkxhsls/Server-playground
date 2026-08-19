@@ -1,13 +1,12 @@
 package org.example.post.controller.dto.request;
 
-public class CreatePostRequest {
-    public String title;
-    public String content;
-    public String author;
-
-    public CreatePostRequest(String title, String content, String author) {
-        this.title = title;
-        this.content = content;
-        this.author = author;
+public record CreatePostRequest(String title, String content, String author) {
+    public void validate() {
+        if (title == null || title.isBlank()) {
+            throw new IllegalArgumentException("제목은 필수입니다!");
+        }
+        if (content == null || content.isBlank()) {
+            throw new IllegalArgumentException("내용은 필수입니다!");
+        }
     }
 }
