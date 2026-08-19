@@ -26,14 +26,17 @@ public class PostController {
         try {
             return ApiResponse.success("게시글 목록 조회 성공", postService.getAllPosts());
         } catch (PostNotFoundException e) {
-            return null;
+            return ApiResponse.failure(e.getMessage());
         }
     }
 
     // GET /posts/{id} 📝 과제
-    public PostResponse getPost(Long id) {
-        // TODO: postService.getPost(id) 호출, 예외 발생 시 null 반환
-        return null;
+    public ApiResponse<PostResponse> getPost(Long id) {
+        try {
+            return ApiResponse.success("게시글 조회 성공", postService.getPost(id));
+        } catch (PostNotFoundException e) {
+            return ApiResponse.failure(e.getMessage());
+        }
     }
 
     // PUT /posts/{id} 📝 과제

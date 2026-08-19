@@ -4,6 +4,7 @@ package org.example.post.service;
 import org.example.post.controller.dto.request.CreatePostRequest;
 import org.example.post.controller.dto.response.PostResponse;
 import org.example.post.domain.Post;
+import org.example.post.exception.PostNotFoundException;
 import org.example.post.repository.PostRepository;
 
 import java.util.List;
@@ -29,8 +30,8 @@ public class PostService {
 
     // READ - 단건 📝 과제
     public PostResponse getPost(Long id) {
-        // TODO
-        return null;
+        Post post = findPostOrThrow(id);
+        return new PostResponse(post);
     }
 
     // UPDATE 📝 과제
@@ -41,5 +42,13 @@ public class PostService {
     // DELETE 📝 과제
     public void deletePost(Long id) {
         // TODO
+    }
+
+    private Post findPostOrThrow(Long id) {
+        Post post = postRepository.findById(id);
+        if (post == null) {
+            throw new PostNotFoundException();
+        }
+        return post;
     }
 }

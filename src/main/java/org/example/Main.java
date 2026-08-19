@@ -60,7 +60,7 @@ public class Main {
 
                 case 3:
                     System.out.print("조회할 게시글 ID: ");
-                    PostResponse post = postController.getPost(scanner.nextLong());
+                    ApiResponse<PostResponse> post = postController.getPost(scanner.nextLong());
                     scanner.nextLine();
                     if (post != null) System.out.println(post);
                     break;
