@@ -1,8 +1,9 @@
 package org.example;
 
+import org.example.global.response.ApiResponse;
 import org.example.post.controller.PostController;
 import org.example.post.controller.dto.request.CreatePostRequest;
-import org.example.post.controller.dto.response.CreatePostResponse;
+import org.example.post.controller.dto.request.UpdatePostRequest;
 import org.example.post.controller.dto.response.PostResponse;
 
 import java.util.List;
@@ -36,15 +37,21 @@ public class Main {
                     String content = scanner.nextLine();
                     System.out.print("작성자: ");
                     String author = scanner.nextLine();
-                    // 클라이언트가 요청 객체를 만들어서 Controller에 전달
-                    CreatePostResponse response = postController.createPost(
+
+                    ApiResponse<PostResponse> createResponse = postController.createPost(
                             new CreatePostRequest(title, content, author)
                     );
-                    System.out.println(response.message);
+                    System.out.println(createResponse.getMessage());
                     break;
 
                 case 2:
-                    List<PostResponse> posts = postController.getAllPosts();
+                    ApiResponse<List<PostResponse>> allPostsResponse = postController.getAllPosts();
+                    if (!allPostsResponse.isSuccess()) {
+                        System.out.println("에러: " + allPostsResponse.getMessage());
+                        break;
+                    }
+
+                    List<PostResponse> posts = allPostsResponse.getData();
                     if (posts.isEmpty()) {
                         System.out.println("등록된 게시글이 없습니다.");
                     } else {
@@ -54,7 +61,7 @@ public class Main {
 
                 case 3:
                     System.out.print("조회할 게시글 ID: ");
-                    PostResponse post = postController.getPost(scanner.nextLong());
+                    ApiResponse<PostResponse> post = postController.getPost(scanner.nextLong());
                     scanner.nextLine();
                     if (post != null) System.out.println(post);
                     break;
@@ -67,13 +74,15 @@ public class Main {
                     String newTitle = scanner.nextLine();
                     System.out.print("새 내용: ");
                     String newContent = scanner.nextLine();
-                    postController.updatePost(updateId, newTitle, newContent);
+                    ApiResponse<Void> updateResponse = postController.updatePost(updateId, new UpdatePostRequest(newTitle, newContent));
+                    System.out.println(updateResponse.isSuccess() ? updateResponse.getMessage() : "에러: " + updateResponse.getMessage());
                     break;
 
                 case 5:
                     System.out.print("삭제할 게시글 ID: ");
-                    postController.deletePost(scanner.nextLong());
+                    ApiResponse<Void> deleteResponse = postController.deletePost(scanner.nextLong());
                     scanner.nextLine();
+                    System.out.println(deleteResponse.isSuccess() ? deleteResponse.getMessage() : "에러: " + deleteResponse.getMessage());
                     break;
 
                 case 0:
