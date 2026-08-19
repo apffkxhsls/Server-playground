@@ -3,6 +3,7 @@ package org.example;
 import org.example.global.response.ApiResponse;
 import org.example.post.controller.PostController;
 import org.example.post.controller.dto.request.CreatePostRequest;
+import org.example.post.controller.dto.request.UpdatePostRequest;
 import org.example.post.controller.dto.response.PostResponse;
 
 import java.util.List;
@@ -73,7 +74,8 @@ public class Main {
                     String newTitle = scanner.nextLine();
                     System.out.print("새 내용: ");
                     String newContent = scanner.nextLine();
-                    postController.updatePost(updateId, newTitle, newContent);
+                    ApiResponse<Void> updateResponse = postController.updatePost(updateId, new UpdatePostRequest(newTitle, newContent));
+                    System.out.println(updateResponse.isSuccess() ? updateResponse.getMessage() : "에러: " + updateResponse.getMessage());
                     break;
 
                 case 5:

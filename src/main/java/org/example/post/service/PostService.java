@@ -2,6 +2,7 @@ package org.example.post.service;
 
 
 import org.example.post.controller.dto.request.CreatePostRequest;
+import org.example.post.controller.dto.request.UpdatePostRequest;
 import org.example.post.controller.dto.response.PostResponse;
 import org.example.post.domain.Post;
 import org.example.post.exception.PostNotFoundException;
@@ -35,8 +36,10 @@ public class PostService {
     }
 
     // UPDATE 📝 과제
-    public void updatePost(Long id, String newTitle, String newContent) {
-        // TODO
+    public void updatePost(Long id, UpdatePostRequest request) {
+        request.validate();
+        Post post = findPostOrThrow(id);
+        post.update(request.newTitle(), request.newContent());
     }
 
     // DELETE 📝 과제
