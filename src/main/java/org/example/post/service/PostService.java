@@ -44,7 +44,8 @@ public class PostService {
 
     // DELETE 📝 과제
     public void deletePost(Long id) {
-        // TODO
+        findPostOrThrow(id);
+        postRepository.deleteById(id);
     }
 
     private Post findPostOrThrow(Long id) {

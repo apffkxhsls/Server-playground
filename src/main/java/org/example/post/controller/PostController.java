@@ -51,7 +51,12 @@ public class PostController {
     }
 
     // DELETE /posts/{id} 📝 과제
-    public void deletePost(Long id) {
-        // TODO: postService.deletePost() 호출, 예외 발생 시 에러 메시지 출력
+    public ApiResponse<Void> deletePost(Long id) {
+        try {
+            postService.deletePost(id);
+            return ApiResponse.success("게시글 삭제 완료", null);
+        } catch (PostNotFoundException e) {
+            return ApiResponse.failure(e.getMessage());
+        }
     }
 }

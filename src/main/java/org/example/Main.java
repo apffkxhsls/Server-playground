@@ -80,8 +80,9 @@ public class Main {
 
                 case 5:
                     System.out.print("삭제할 게시글 ID: ");
-                    postController.deletePost(scanner.nextLong());
+                    ApiResponse<Void> deleteResponse = postController.deletePost(scanner.nextLong());
                     scanner.nextLine();
+                    System.out.println(deleteResponse.isSuccess() ? deleteResponse.getMessage() : "에러: " + deleteResponse.getMessage());
                     break;
 
                 case 0:
