@@ -1,11 +1,12 @@
 package org.example.post.service;
 
 
-import org.example.post.presentation.dto.request.CreatePostRequest;
-import org.example.post.presentation.dto.request.UpdatePostRequest;
-import org.example.post.presentation.dto.response.PostResponse;
 import org.example.post.domain.Post;
 import org.example.post.domain.exception.PostNotFoundException;
+import org.example.post.presentation.dto.request.CreatePostRequest;
+import org.example.post.presentation.dto.request.UpdatePostRequest;
+import org.example.post.presentation.dto.response.CreatePostResponse;
+import org.example.post.presentation.dto.response.PostResponse;
 import org.example.post.repository.PostRepository;
 import org.springframework.stereotype.Service;
 
@@ -14,15 +15,34 @@ import java.util.Optional;
 
 @Service
 public class PostService {
-    private final PostRepository postRepository = new PostRepository();
+    private final PostRepository postRepository;
+
+    public PostService(PostRepository postRepository) {
+        this.postRepository = postRepository;
+    }
 
     // CREATE
-    public PostResponse createPost(CreatePostRequest request) {
-        request.validate();
+    public CreatePostResponse createPost(CreatePostRequest request) {
+        // 1. 유효성 검증
+        if (request.title() == null || request.title().isBlank()) {
+            throw new IllegalArgumentException("제목은 필수입니다!");
+        }
+        if (request.content() == null || request.content().isBlank()) {
+            throw new IllegalArgumentException("내용은 필수입니다!");
+        }
+        // 2. Post 도메인 객체 생성
         String createdAt = java.time.LocalDateTime.now().toString();
-        Post post = new Post(postRepository.generateId(), request.title(), request.content(), request.author(), createdAt);
+        Post post = new Post(
+                postRepository.generateId(),
+                request.title(),
+                request.content(),
+                request.author(),
+                createdAt
+        );
+        // 3. 저장
         postRepository.save(post);
-        return new PostResponse(post);
+        // 4. 응답 DTO 조립해서 반환
+        return new CreatePostResponse(post.getId());
     }
 
     // READ - 전체
