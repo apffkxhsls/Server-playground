@@ -1,6 +1,6 @@
 package org.example.global.exception;
 
-import org.example.global.exception.code.ErrorCode;
+import org.example.global.code.ErrorCode;
 
 public class BaseException extends RuntimeException {
 
