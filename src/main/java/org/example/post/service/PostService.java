@@ -24,12 +24,7 @@ public class PostService {
     // CREATE
     public CreatePostResponse createPost(CreatePostRequest request) {
         // 1. 유효성 검증
-        if (request.title() == null || request.title().isBlank()) {
-            throw new IllegalArgumentException("제목은 필수입니다!");
-        }
-        if (request.content() == null || request.content().isBlank()) {
-            throw new IllegalArgumentException("내용은 필수입니다!");
-        }
+        request.validate();
         // 2. Post 도메인 객체 생성
         String createdAt = java.time.LocalDateTime.now().toString();
         Post post = new Post(
@@ -62,7 +57,8 @@ public class PostService {
     public void updatePost(Long id, UpdatePostRequest request) {
         request.validate();
         Post post = findPostOrThrow(id);
-        post.update(request.newTitle(), request.newContent());
+        Post updated = post.update(request.newTitle(), request.newContent());
+        postRepository.save(updated);
     }
 
     // DELETE
