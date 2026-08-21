@@ -1,14 +1,18 @@
-package org.example.post.controller;
+package org.example.post.presentation.controller;
 
 import org.example.global.response.ApiResponse;
-import org.example.post.controller.dto.request.CreatePostRequest;
-import org.example.post.controller.dto.request.UpdatePostRequest;
-import org.example.post.controller.dto.response.PostResponse;
-import org.example.post.exception.PostNotFoundException;
+import org.example.post.presentation.dto.request.CreatePostRequest;
+import org.example.post.presentation.dto.request.UpdatePostRequest;
+import org.example.post.presentation.dto.response.PostResponse;
+import org.example.post.domain.exception.PostNotFoundException;
 import org.example.post.service.PostService;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@RestController
+@RequestMapping("/posts")
 public class PostController {
     private final PostService postService = new PostService();
 
@@ -22,7 +26,7 @@ public class PostController {
         }
     }
 
-    // GET /posts 📝 과제
+    // GET /posts
     public ApiResponse<List<PostResponse>> getAllPosts() {
         try {
             return ApiResponse.success("게시글 목록 조회 성공", postService.getAllPosts());
@@ -31,7 +35,7 @@ public class PostController {
         }
     }
 
-    // GET /posts/{id} 📝 과제
+    // GET /posts/{id}
     public ApiResponse<PostResponse> getPost(Long id) {
         try {
             return ApiResponse.success("게시글 조회 성공", postService.getPost(id));
@@ -40,7 +44,7 @@ public class PostController {
         }
     }
 
-    // PUT /posts/{id} 📝 과제
+    // PUT /posts/{id}
     public ApiResponse<Void> updatePost(Long id, UpdatePostRequest request) {
         try {
             postService.updatePost(id, request);
@@ -50,7 +54,7 @@ public class PostController {
         }
     }
 
-    // DELETE /posts/{id} 📝 과제
+    // DELETE /posts/{id}
     public ApiResponse<Void> deletePost(Long id) {
         try {
             postService.deletePost(id);

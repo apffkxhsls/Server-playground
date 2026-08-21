@@ -1,4 +1,4 @@
-package org.example.post.controller.dto.response;
+package org.example.post.presentation.dto.response;
 
 import org.example.post.domain.Post;
 

@@ -1,16 +1,18 @@
 package org.example.post.service;
 
 
-import org.example.post.controller.dto.request.CreatePostRequest;
-import org.example.post.controller.dto.request.UpdatePostRequest;
-import org.example.post.controller.dto.response.PostResponse;
+import org.example.post.presentation.dto.request.CreatePostRequest;
+import org.example.post.presentation.dto.request.UpdatePostRequest;
+import org.example.post.presentation.dto.response.PostResponse;
 import org.example.post.domain.Post;
-import org.example.post.exception.PostNotFoundException;
+import org.example.post.domain.exception.PostNotFoundException;
 import org.example.post.repository.PostRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class PostService {
     private final PostRepository postRepository = new PostRepository();
 
@@ -23,27 +25,27 @@ public class PostService {
         return new PostResponse(post);
     }
 
-    // READ - 전체 📝 과제
+    // READ - 전체
     public List<PostResponse> getAllPosts() {
         return postRepository.findAll().stream()
                 .map(PostResponse::new)
                 .toList();
     }
 
-    // READ - 단건 📝 과제
+    // READ - 단건
     public PostResponse getPost(Long id) {
         Post post = findPostOrThrow(id);
         return new PostResponse(post);
     }
 
-    // UPDATE 📝 과제
+    // UPDATE
     public void updatePost(Long id, UpdatePostRequest request) {
         request.validate();
         Post post = findPostOrThrow(id);
         post.update(request.newTitle(), request.newContent());
     }
 
-    // DELETE 📝 과제
+    // DELETE
     public void deletePost(Long id) {
         findPostOrThrow(id);
         postRepository.deleteById(id);

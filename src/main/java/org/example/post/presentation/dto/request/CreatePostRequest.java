@@ -1,4 +1,4 @@
-package org.example.post.controller.dto.request;
+package org.example.post.presentation.dto.request;
 
 public record CreatePostRequest(String title, String content, String author) {
     public void validate() {
