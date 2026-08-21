@@ -1,12 +1,12 @@
 package org.example.post.presentation.controller;
 
 import org.example.global.response.ApiResponse;
+import org.example.post.domain.code.PostSuccessCode;
 import org.example.post.presentation.dto.request.CreatePostRequest;
 import org.example.post.presentation.dto.request.UpdatePostRequest;
 import org.example.post.presentation.dto.response.CreatePostResponse;
 import org.example.post.presentation.dto.response.PostResponse;
 import org.example.post.service.PostService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,13 +27,13 @@ public class PostController {
             @RequestBody CreatePostRequest request
     ) {
         CreatePostResponse response = postService.createPost(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("게시글 등록 완료!", response));
+        return ApiResponse.success(PostSuccessCode.POST_CREATED, response);
     }
 
     // GET /posts
     @GetMapping
     public ResponseEntity<ApiResponse<List<PostResponse>>> getAllPosts() {
-        return ResponseEntity.ok(ApiResponse.success("게시글 목록 조회 성공", postService.getAllPosts()));
+        return ApiResponse.success(PostSuccessCode.POST_LIST_READ, postService.getAllPosts());
     }
 
     // GET /posts/{id}
@@ -41,7 +41,7 @@ public class PostController {
     public ResponseEntity<ApiResponse<PostResponse>> getPost(
             @PathVariable Long id
     ) {
-        return ResponseEntity.ok(ApiResponse.success("게시글 조회 성공", postService.getPost(id)));
+        return ApiResponse.success(PostSuccessCode.POST_READ, postService.getPost(id));
     }
 
     // PUT /posts/{id}
@@ -51,7 +51,7 @@ public class PostController {
             @RequestBody UpdatePostRequest request
     ) {
         postService.updatePost(id, request);
-        return ResponseEntity.ok(ApiResponse.success("게시글 수정 완료", null));
+        return ApiResponse.success(PostSuccessCode.POST_UPDATED, null);
     }
 
     // DELETE /posts/{id}
@@ -60,6 +60,6 @@ public class PostController {
             @PathVariable Long id
     ) {
         postService.deletePost(id);
-        return ResponseEntity.ok(ApiResponse.success("게시글 삭제 완료", null));
+        return ApiResponse.success(PostSuccessCode.POST_DELETED, null);
     }
 }

@@ -1,15 +1,24 @@
 package org.example.global.response;
 
-public record ApiResponse<T> (
-    boolean success,
-    String message,
-    T data
+import org.example.global.code.ErrorCode;
+import org.example.global.code.SuccessCode;
+import org.springframework.http.ResponseEntity;
+
+public record ApiResponse<T>(
+        String code,
+        boolean success,
+        String message,
+        T data
 ) {
-    public static <T> ApiResponse<T> success(String message, T data) {
-        return new ApiResponse<>(true, message, data);
+    public static <T> ResponseEntity<ApiResponse<T>> success(SuccessCode successCode, T data) {
+        return ResponseEntity
+                .status(successCode.getHttpStatus())
+                .body(new ApiResponse<>(successCode.getCode(), true, successCode.getMessage(), data));
     }
 
-    public static <T> ApiResponse<T> failure(String message) {
-        return new ApiResponse<>(false, message, null);
+    public static <T> ResponseEntity<ApiResponse<T>> failure(ErrorCode errorCode) {
+        return ResponseEntity
+                .status(errorCode.getHttpStatus())
+                .body(new ApiResponse<>(errorCode.getCode(), true, errorCode.getMessage(), null));
     }
 }
