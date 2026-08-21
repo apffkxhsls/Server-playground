@@ -9,6 +9,7 @@ import org.example.post.exception.PostNotFoundException;
 import org.example.post.repository.PostRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public class PostService {
     private final PostRepository postRepository = new PostRepository();
@@ -49,10 +50,7 @@ public class PostService {
     }
 
     private Post findPostOrThrow(Long id) {
-        Post post = postRepository.findById(id);
-        if (post == null) {
-            throw new PostNotFoundException();
-        }
-        return post;
+        Optional<Post> post = postRepository.findById(id);
+        return post.orElseThrow(PostNotFoundException::new);
     }
 }

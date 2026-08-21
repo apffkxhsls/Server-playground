@@ -1,10 +1,13 @@
 package org.example.post.repository;
 
 import org.example.post.domain.Post;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+@Repository
 public class PostRepository {
     private final List<Post> postList = new ArrayList<>();
     private Long nextId = 1L;
@@ -22,13 +25,10 @@ public class PostRepository {
         return postList;
     }
 
-    public Post findById(Long id) {
-        for (Post post : postList) {
-            if (id.equals(post.getId())) {
-                return post;
-            }
-        }
-        return null;
+    public Optional<Post> findById(Long id) {
+        return postList.stream()
+                .filter(p -> p.getId().equals(id))
+                .findFirst();
     }
 
     public void deleteById(Long id) {
