@@ -7,7 +7,7 @@ import org.example.post.presentation.dto.request.CreatePostRequest;
 import org.example.post.presentation.dto.request.UpdatePostRequest;
 import org.example.post.presentation.dto.response.CreatePostResponse;
 import org.example.post.presentation.dto.response.PostResponse;
-import org.example.post.repository.PostRepository;
+import org.example.post.domain.repository.PostRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,9 +35,9 @@ public class PostService {
                 createdAt
         );
         // 3. 저장
-        postRepository.save(post);
+        Post create = postRepository.save(post);
         // 4. 응답 DTO 조립해서 반환
-        return new CreatePostResponse(post.getId());
+        return new CreatePostResponse(create.getId());
     }
 
     // READ - 전체
