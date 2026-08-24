@@ -1,6 +1,6 @@
 package org.example.post.instructure;
 
-import org.example.post.domain.model.Post;
+import org.example.post.domain.Post;
 import org.example.post.domain.repository.PostRepository;
 import org.springframework.stereotype.Repository;
 

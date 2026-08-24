@@ -1,6 +1,6 @@
 package org.example.post.domain.repository;
 
-import org.example.post.domain.model.Post;
+import org.example.post.domain.Post;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
