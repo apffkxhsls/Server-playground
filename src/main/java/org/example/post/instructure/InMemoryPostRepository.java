@@ -1,6 +1,7 @@
 package org.example.post.instructure;
 
 import org.example.post.domain.Post;
+import org.example.post.domain.model.BoardType;
 import org.example.post.domain.repository.PostRepository;
 import org.springframework.stereotype.Repository;
 
@@ -31,10 +32,17 @@ public class InMemoryPostRepository implements PostRepository {
     }
 
     @Override
+    public synchronized List<Post> findAllByBoardType(BoardType boardType) {
+        return postList.stream()
+                .filter(p -> p.getBoardType().equals(boardType))
+                .toList();  // 필터링 결과 전체
+    }
+
+    @Override
     public synchronized Optional<Post> findById(Long id) {
         return postList.stream()
                 .filter(p -> p.getId().equals(id))
-                .findFirst();
+                .findFirst();  // 첫 게시글 하나를 찾아서 Optional<Post>로 반환
     }
 
     @Override

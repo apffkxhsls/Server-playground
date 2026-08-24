@@ -1,6 +1,7 @@
 package org.example.post.domain.repository;
 
 import org.example.post.domain.Post;
+import org.example.post.domain.model.BoardType;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,6 +15,8 @@ public interface PostRepository {
     Long generateId();
 
     List<Post> findAll();
+
+    List<Post> findAllByBoardType(BoardType boardType);
 
     Optional<Post> findById(Long Id);
 

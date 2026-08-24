@@ -3,6 +3,7 @@ package org.example.post.service;
 
 import org.example.post.domain.Post;
 import org.example.post.domain.exception.PostNotFoundException;
+import org.example.post.domain.model.BoardType;
 import org.example.post.presentation.dto.request.CreatePostRequest;
 import org.example.post.presentation.dto.request.UpdatePostRequest;
 import org.example.post.presentation.dto.response.CreatePostResponse;
@@ -32,6 +33,7 @@ public class PostService {
                 request.title(),
                 request.content(),
                 request.author(),
+                request.boardType(),
                 createdAt
         );
         // 3. 저장
@@ -40,16 +42,27 @@ public class PostService {
         return new CreatePostResponse(create.getId());
     }
 
-    // READ - 목록 전체
-    public List<PostResponse> getAllPosts(int page, int size) {
-        return postRepository.findAll().stream()
+    // READ - 목록 조회
+    public List<PostResponse> getAllPosts(
+            int page,
+            int size,
+            BoardType boardType
+    ) {
+        List<Post> posts;
+
+        if (boardType == null) {
+            posts = postRepository.findAll();
+        } else {
+            posts = postRepository.findAllByBoardType(boardType);
+        }
+        return posts.stream()
                 .skip((long) page * size)
                 .limit(size)
                 .map(PostResponse::new)
                 .toList();
     }
 
-    // READ - 단건
+    // READ - 단건 (id를 알기 때문에 자동으로 BoardType을 알게 됨)
     public PostResponse getPost(Long id) {
         Post post = findPostOrThrow(id);
         return new PostResponse(post);

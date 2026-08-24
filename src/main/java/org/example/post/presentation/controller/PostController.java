@@ -3,6 +3,7 @@ package org.example.post.presentation.controller;
 import jakarta.validation.Valid;
 import org.example.global.response.BaseResponse;
 import org.example.post.domain.code.PostSuccessCode;
+import org.example.post.domain.model.BoardType;
 import org.example.post.presentation.dto.request.CreatePostRequest;
 import org.example.post.presentation.dto.request.UpdatePostRequest;
 import org.example.post.presentation.dto.response.CreatePostResponse;
@@ -35,9 +36,11 @@ public class PostController {
     @GetMapping
     public ResponseEntity<BaseResponse<List<PostResponse>>> getAllPosts(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        return BaseResponse.success(PostSuccessCode.POST_LIST_READ, postService.getAllPosts(page, size));
+            @RequestParam(defaultValue = "10") int size,
+            // boardType 파라미터는 없어도 요청을 오류로 처리하지 않는다는 의미
+            @RequestParam(required = false) BoardType boardType
+            ) {
+        return BaseResponse.success(PostSuccessCode.POST_LIST_READ, postService.getAllPosts(page, size, boardType));
     }
 
     // GET /posts/{id}
