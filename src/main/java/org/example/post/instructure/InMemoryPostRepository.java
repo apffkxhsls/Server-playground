@@ -17,6 +17,14 @@ public class InMemoryPostRepository implements PostRepository {
 
     @Override
     public synchronized Post save(Post post) {
+        for (int i = 0; i < postList.size(); i++) {
+            Post savedPost = postList.get(i);
+
+            if (savedPost.getId().equals(post.getId())) {
+                postList.set(i, post);
+                return post;
+            }
+        }
         postList.add(post);
         return post;
     }
