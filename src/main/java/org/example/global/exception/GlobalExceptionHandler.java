@@ -2,7 +2,7 @@ package org.example.global.exception;
 
 import org.example.global.code.ErrorCode;
 import org.example.global.code.GlobalErrorCode;
-import org.example.global.response.ApiResponse;
+import org.example.global.response.BaseResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -20,41 +20,41 @@ public class GlobalExceptionHandler {
 
     // 커스텀 예외 처리
     @ExceptionHandler(BaseException.class)
-    public ResponseEntity<ApiResponse<Void>> handleBaseException(BaseException e) {
+    public ResponseEntity<BaseResponse<Void>> handleBaseException(BaseException e) {
         ErrorCode errorCode = e.getErrorCode();
         log.warn("Business exception: {}", errorCode.getMessage());
-        return ApiResponse.failure(errorCode);
+        return BaseResponse.failure(errorCode);
     }
 
     // JSON 파싱 실패 처리
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ApiResponse<Void>> handleMessageNotReadableException(HttpMessageNotReadableException e) {
+    public ResponseEntity<BaseResponse<Void>> handleMessageNotReadableException(HttpMessageNotReadableException e) {
         log.warn("Request body is not readable: {}", e.getMessage());
-        return ApiResponse.failure(GlobalErrorCode.INVALID_REQUEST);
+        return BaseResponse.failure(GlobalErrorCode.INVALID_REQUEST);
     }
 
     // PostNotFoundException → 404
     @ExceptionHandler(NoResourceFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<ApiResponse<Void>> handleNoResourceFound(NoResourceFoundException e) {
+    public ResponseEntity<BaseResponse<Void>> handleNoResourceFound(NoResourceFoundException e) {
         log.debug("Resource not found: {}", e.getResourcePath());
-        return ApiResponse.failure(GlobalErrorCode.RESOURCE_NOT_FOUND);
+        return BaseResponse.failure(GlobalErrorCode.RESOURCE_NOT_FOUND);
     }
 
     // 유효성 검증 실패 → 400
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ApiResponse<Void>> handleIllegalArgumentException(IllegalArgumentException e) {
+    public ResponseEntity<BaseResponse<Void>> handleIllegalArgumentException(IllegalArgumentException e) {
         log.warn("Validation failed: {}", e.getMessage());
-        return ApiResponse.failure(GlobalErrorCode.INVALID_REQUEST);
+        return BaseResponse.failure(GlobalErrorCode.INVALID_REQUEST);
     }
 
     // 예상치 못한 모든 예외 → 500
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<ApiResponse<Void>> handleException(Exception e) {
+    public ResponseEntity<BaseResponse<Void>> handleException(Exception e) {
         log.error("Unexpected error occurred", e);
-        return ApiResponse.failure(GlobalErrorCode.INTERNAL_SERVER_ERROR);
+        return BaseResponse.failure(GlobalErrorCode.INTERNAL_SERVER_ERROR);
     }
 }

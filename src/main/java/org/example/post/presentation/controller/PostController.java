@@ -1,6 +1,7 @@
 package org.example.post.presentation.controller;
 
-import org.example.global.response.ApiResponse;
+import jakarta.validation.Valid;
+import org.example.global.response.BaseResponse;
 import org.example.post.domain.code.PostSuccessCode;
 import org.example.post.presentation.dto.request.CreatePostRequest;
 import org.example.post.presentation.dto.request.UpdatePostRequest;
@@ -23,43 +24,43 @@ public class PostController {
 
     // POST /posts
     @PostMapping
-    public ResponseEntity<ApiResponse<CreatePostResponse>> createPost(
-            @RequestBody CreatePostRequest request
+    public ResponseEntity<BaseResponse<CreatePostResponse>> createPost(
+            @Valid @RequestBody CreatePostRequest request
     ) {
         CreatePostResponse response = postService.createPost(request);
-        return ApiResponse.success(PostSuccessCode.POST_CREATED, response);
+        return BaseResponse.success(PostSuccessCode.POST_CREATED, response);
     }
 
     // GET /posts
     @GetMapping
-    public ResponseEntity<ApiResponse<List<PostResponse>>> getAllPosts() {
-        return ApiResponse.success(PostSuccessCode.POST_LIST_READ, postService.getAllPosts());
+    public ResponseEntity<BaseResponse<List<PostResponse>>> getAllPosts() {
+        return BaseResponse.success(PostSuccessCode.POST_LIST_READ, postService.getAllPosts());
     }
 
     // GET /posts/{id}
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<PostResponse>> getPost(
+    public ResponseEntity<BaseResponse<PostResponse>> getPost(
             @PathVariable Long id
     ) {
-        return ApiResponse.success(PostSuccessCode.POST_READ, postService.getPost(id));
+        return BaseResponse.success(PostSuccessCode.POST_READ, postService.getPost(id));
     }
 
     // PUT /posts/{id}
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> updatePost(
+    public ResponseEntity<BaseResponse<Void>> updatePost(
             @PathVariable Long id,
             @RequestBody UpdatePostRequest request
     ) {
         postService.updatePost(id, request);
-        return ApiResponse.success(PostSuccessCode.POST_UPDATED, null);
+        return BaseResponse.success(PostSuccessCode.POST_UPDATED, null);
     }
 
     // DELETE /posts/{id}
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deletePost(
+    public ResponseEntity<BaseResponse<Void>> deletePost(
             @PathVariable Long id
     ) {
         postService.deletePost(id);
-        return ApiResponse.success(PostSuccessCode.POST_DELETED, null);
+        return BaseResponse.success(PostSuccessCode.POST_DELETED, null);
     }
 }
