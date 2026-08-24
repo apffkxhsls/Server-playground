@@ -1,0 +1,61 @@
+package org.example.post.instructure;
+
+import org.example.post.domain.Post;
+import org.example.post.domain.model.BoardType;
+import org.example.post.domain.repository.PostRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public class InMemoryPostRepository implements PostRepository {
+
+    private final List<Post> postList = new ArrayList<>();
+    private Long nextId = 1L;
+
+    @Override
+    public synchronized Post save(Post post) {
+        for (int i = 0; i < postList.size(); i++) {
+            Post savedPost = postList.get(i);
+
+            if (savedPost.getId().equals(post.getId())) {
+                postList.set(i, post);
+                return post;
+            }
+        }
+        postList.add(post);
+        return post;
+    }
+
+    @Override
+    public synchronized Long generateId() {
+        return nextId++;
+    }
+
+    @Override
+    public synchronized List<Post> findAll() {
+        return postList;
+    }
+
+    @Override
+    public synchronized List<Post> findAllByBoardType(BoardType boardType) {
+        return postList.stream()
+                .filter(p -> p.getBoardType().equals(boardType))
+                .toList();  // 필터링 결과 전체
+    }
+
+    @Override
+    public synchronized Optional<Post> findById(Long id) {
+        return postList.stream()
+                .filter(p -> p.getId().equals(id))
+                .findFirst();  // 첫 게시글 하나를 찾아서 Optional<Post>로 반환
+    }
+
+    @Override
+    public synchronized void deleteById(Long id) {
+        postList.removeIf(post -> id.equals(post.getId()));
+    }
+}
+

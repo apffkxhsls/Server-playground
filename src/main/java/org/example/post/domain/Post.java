@@ -1,20 +1,15 @@
 package org.example.post.domain;
 
-public class Post {
-    private Long id;          // 게시글 상세 화면 — 특정 게시글 식별용
-    private String title;     // 목록, 상세, 글쓰기 화면 — 제목
-    private String content;   // 목록(미리보기), 상세(전체) 화면 — 내용
-    private String author;    // 목록, 상세 화면 — 글쓴이
-    private String createdAt; // 목록, 상세 화면 — 작성 시각
+import org.example.post.domain.model.BoardType;
 
-    public Post(Long id, String title, String content, String author, String createdAt) {
-        this.id = id;
-        this.title = title;
-        this.content = content;
-        this.author = author;
-        this.createdAt = createdAt;
-    }
-
+public record Post(
+        Long id,          // 게시글 상세 화면 — 특정 게시글 식별용
+        String title,     // 목록, 상세, 글쓰기 화면 — 제목
+        String content,   // 목록(미리보기), 상세(전체) 화면 — 내용
+        String author,    // 목록, 상세 화면 — 글쓴이
+        BoardType boardType,
+        String createdAt// 목록, 상세 화면 — 작성 시각
+) {
     public Long getId() {
         return id;
     }
@@ -31,16 +26,15 @@ public class Post {
         return author;
     }
 
+    public BoardType getBoardType() {
+        return boardType;
+    }
+
     public String getCreatedAt() {
         return createdAt;
     }
 
-    public void update(String title, String content) {
-        this.title = title;
-        this.content = content;
-    }
-
-    public String getInfo() {
-        return "[" + id + "] " + title + " - " + author + " (" + createdAt + ")\n" + content;
+    public Post update(String title, String content) {
+        return new Post(id, title, content, author, boardType, createdAt);
     }
 }
