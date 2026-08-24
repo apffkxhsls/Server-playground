@@ -40,9 +40,11 @@ public class PostService {
         return new CreatePostResponse(create.getId());
     }
 
-    // READ - 전체
-    public List<PostResponse> getAllPosts() {
+    // READ - 목록 전체
+    public List<PostResponse> getAllPosts(int page, int size) {
         return postRepository.findAll().stream()
+                .skip((long) page * size)
+                .limit(size)
                 .map(PostResponse::new)
                 .toList();
     }

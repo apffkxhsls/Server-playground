@@ -33,8 +33,11 @@ public class PostController {
 
     // GET /posts
     @GetMapping
-    public ResponseEntity<BaseResponse<List<PostResponse>>> getAllPosts() {
-        return BaseResponse.success(PostSuccessCode.POST_LIST_READ, postService.getAllPosts());
+    public ResponseEntity<BaseResponse<List<PostResponse>>> getAllPosts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return BaseResponse.success(PostSuccessCode.POST_LIST_READ, postService.getAllPosts(page, size));
     }
 
     // GET /posts/{id}
