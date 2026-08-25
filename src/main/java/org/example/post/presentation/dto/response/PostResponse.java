@@ -22,8 +22,7 @@ public record PostResponse(
         );
     }
 
-    @Override
-    public String toString() {
-        return "[" + id + "] " + title + " - " + authorId + " (" + createdAt + ")\n" + content;
+    public static PostResponse from(Post post) {
+        return new PostResponse(post);
     }
 }

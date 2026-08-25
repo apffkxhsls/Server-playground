@@ -28,6 +28,7 @@ public class PostService {
     }
 
     // CREATE
+    @Transactional
     public CreatePostResponse createPost(CreatePostRequest request) {
         // 1. 유효성 검증
         request.validate();
@@ -49,6 +50,7 @@ public class PostService {
     }
 
     // READ - 목록 조회
+    @Transactional
     public List<PostResponse> getAllPosts(
             int page,
             int size,
@@ -64,22 +66,24 @@ public class PostService {
         return posts.stream()
                 .skip((long) page * size)
                 .limit(size)
-                .map(PostResponse::new)
+                .map(PostResponse::from)
                 .toList();
     }
 
     // READ - 단건 (id를 알기 때문에 자동으로 BoardType을 알게 됨)
+    @Transactional
     public PostResponse getPost(Long id) {
         Post post = findPostOrThrow(id);
-        return new PostResponse(post);
+        return PostResponse.from(post);
     }
 
     // UPDATE
     @Transactional  // 이 범위 안에서 조회한 Post를 JPA가 계속 관리
-    public void updatePost(Long id, UpdatePostRequest request) {
+    public PostResponse updatePost(Long id, UpdatePostRequest request) {
         request.validate();
         Post post = findPostOrThrow(id);
         post.update(request.newTitle(), request.newContent());
+        return PostResponse.from(post);
     }
 
     // DELETE

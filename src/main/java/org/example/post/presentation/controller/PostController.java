@@ -74,12 +74,12 @@ public class PostController {
 
     // PUT /posts/{id}
     @PutMapping("/{id}")
-    public ResponseEntity<BaseResponse<Void>> updatePost(
+    public ResponseEntity<BaseResponse<PostResponse>> updatePost(
             @PathVariable Long id,
             @RequestBody UpdatePostRequest request
     ) {
-        postService.updatePost(id, request);
-        return BaseResponse.success(PostSuccessCode.POST_UPDATED, null);
+        PostResponse response = postService.updatePost(id, request);
+        return BaseResponse.success(PostSuccessCode.POST_UPDATED, response);
     }
 
     // DELETE /posts/{id}
