@@ -1,13 +1,13 @@
 package org.example.post.presentation.dto.response;
 
-import org.example.post.domain.Post;
+import org.example.post.domain.entity.Post;
 import org.example.post.domain.model.BoardType;
 
 public record PostResponse(
         Long id,
         String title,
         String content,
-        String author,
+        Long authorId,
         BoardType boardType,
         String createdAt
 ) {
@@ -16,7 +16,7 @@ public record PostResponse(
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
-                post.getAuthor(),
+                post.getAuthor().getId(),
                 post.getBoardType(),
                 post.getCreatedAt()
         );
@@ -24,6 +24,6 @@ public record PostResponse(
 
     @Override
     public String toString() {
-        return "[" + id + "] " + title + " - " + author + " (" + createdAt + ")\n" + content;
+        return "[" + id + "] " + title + " - " + authorId + " (" + createdAt + ")\n" + content;
     }
 }

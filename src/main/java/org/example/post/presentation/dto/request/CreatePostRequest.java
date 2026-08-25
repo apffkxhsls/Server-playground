@@ -5,7 +5,7 @@ import org.example.post.domain.model.BoardType;
 public record CreatePostRequest(
         String title,
         String content,
-        String author,
+        Long authorId,
         BoardType boardType
 ) {
     public void validate() {
@@ -14,6 +14,9 @@ public record CreatePostRequest(
         }
         if (content == null || content.isBlank()) {
             throw new IllegalArgumentException("내용은 필수입니다!");
+        }
+        if (authorId == null) {
+            throw new IllegalArgumentException("작성자 ID는 필수입니다!");
         }
         if (boardType == null) {
             throw new IllegalArgumentException("게시판 선택은 필수입니다!");
