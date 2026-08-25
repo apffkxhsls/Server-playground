@@ -1,7 +1,6 @@
 package org.example.post.service;
 
 
-import jakarta.transaction.Transactional;
 import org.example.post.domain.entity.Post;
 import org.example.post.domain.entity.User;
 import org.example.post.domain.exception.PostNotFoundException;
@@ -13,6 +12,7 @@ import org.example.post.presentation.dto.request.UpdatePostRequest;
 import org.example.post.presentation.dto.response.CreatePostResponse;
 import org.example.post.presentation.dto.response.PostResponse;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -50,7 +50,7 @@ public class PostService {
     }
 
     // READ - 목록 조회
-    @Transactional
+    @Transactional(readOnly = true)
     public List<PostResponse> getAllPosts(
             int page,
             int size,
@@ -71,7 +71,7 @@ public class PostService {
     }
 
     // READ - 단건 (id를 알기 때문에 자동으로 BoardType을 알게 됨)
-    @Transactional
+    @Transactional(readOnly = true)
     public PostResponse getPost(Long id) {
         Post post = findPostOrThrow(id);
         return PostResponse.from(post);
