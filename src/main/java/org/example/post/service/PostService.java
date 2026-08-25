@@ -1,14 +1,17 @@
 package org.example.post.service;
 
 
+import jakarta.transaction.Transactional;
 import org.example.post.domain.entity.Post;
+import org.example.post.domain.entity.User;
 import org.example.post.domain.exception.PostNotFoundException;
 import org.example.post.domain.model.BoardType;
+import org.example.post.domain.repository.PostRepository;
+import org.example.post.domain.repository.UserRepository;
 import org.example.post.presentation.dto.request.CreatePostRequest;
 import org.example.post.presentation.dto.request.UpdatePostRequest;
 import org.example.post.presentation.dto.response.CreatePostResponse;
 import org.example.post.presentation.dto.response.PostResponse;
-import org.example.post.domain.repository.PostRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,9 +20,11 @@ import java.util.Optional;
 @Service
 public class PostService {
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
-    public PostService(PostRepository postRepository) {
+    public PostService(PostRepository postRepository, UserRepository userRepository) {
         this.postRepository = postRepository;
+        this.userRepository = userRepository;
     }
 
     // CREATE
@@ -28,11 +33,12 @@ public class PostService {
         request.validate();
         // 2. Post 도메인 객체 생성
         String createdAt = java.time.LocalDateTime.now().toString();
+        User author = userRepository.findById(request.authorId())
+                .orElseThrow(() -> new IllegalArgumentException("작성자를 찾을 수 없습니다."));
         Post post = new Post(
-                postRepository.generateId(),
                 request.title(),
                 request.content(),
-                request.author(),
+                author,
                 request.boardType(),
                 createdAt
         );
@@ -69,11 +75,11 @@ public class PostService {
     }
 
     // UPDATE
+    @Transactional  // 이 범위 안에서 조회한 Post를 JPA가 계속 관리
     public void updatePost(Long id, UpdatePostRequest request) {
         request.validate();
         Post post = findPostOrThrow(id);
-        Post updated = post.update(request.newTitle(), request.newContent());
-        postRepository.save(updated);
+        post.update(request.newTitle(), request.newContent());
     }
 
     // DELETE
