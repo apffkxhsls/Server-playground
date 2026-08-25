@@ -1,7 +1,7 @@
 package org.example.post.service;
 
 
-import org.example.post.domain.Post;
+import org.example.post.domain.entity.Post;
 import org.example.post.domain.exception.PostNotFoundException;
 import org.example.post.domain.model.BoardType;
 import org.example.post.presentation.dto.request.CreatePostRequest;
