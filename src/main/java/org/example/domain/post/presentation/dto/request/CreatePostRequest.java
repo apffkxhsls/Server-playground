@@ -1,6 +1,7 @@
 package org.example.domain.post.presentation.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.example.domain.post.domain.model.BoardType;
 
@@ -13,9 +14,9 @@ public record CreatePostRequest(
         @Size(max = 500, message = "내용은 500자를 초과할 수 없습니다.")
         String content,
 
-        @NotBlank(message = "작성자는 필수입니다.")
-        String user,
+        @NotNull(message = "작성자 ID는 필수입니다.")
+        Long userId,
 
-        @NotBlank(message = "게시판 선택은 필수입니다.")
+        @NotNull(message = "게시판 선택은 필수입니다.")
         BoardType boardType
 ) {}
