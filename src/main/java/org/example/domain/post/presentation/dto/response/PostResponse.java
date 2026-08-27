@@ -1,7 +1,7 @@
-package org.example.post.presentation.dto.response;
+package org.example.domain.post.presentation.dto.response;
 
-import org.example.post.domain.entity.Post;
-import org.example.post.domain.model.BoardType;
+import org.example.domain.post.domain.entity.Post;
+import org.example.domain.post.domain.model.BoardType;
 
 public record PostResponse(
         Long id,

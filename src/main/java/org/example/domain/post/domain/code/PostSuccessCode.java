@@ -1,4 +1,4 @@
-package org.example.post.domain.code;
+package org.example.domain.post.domain.code;
 
 import org.example.global.code.SuccessCode;
 import org.springframework.http.HttpStatus;

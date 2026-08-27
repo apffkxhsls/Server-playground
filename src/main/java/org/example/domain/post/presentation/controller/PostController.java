@@ -1,4 +1,4 @@
-package org.example.post.presentation.controller;
+package org.example.domain.post.presentation.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -7,13 +7,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.example.global.response.BaseResponse;
-import org.example.post.domain.code.PostSuccessCode;
-import org.example.post.domain.model.BoardType;
-import org.example.post.presentation.dto.request.CreatePostRequest;
-import org.example.post.presentation.dto.request.UpdatePostRequest;
-import org.example.post.presentation.dto.response.CreatePostResponse;
-import org.example.post.presentation.dto.response.PostResponse;
-import org.example.post.service.PostService;
+import org.example.domain.post.domain.code.PostSuccessCode;
+import org.example.domain.post.domain.model.BoardType;
+import org.example.domain.post.presentation.dto.request.CreatePostRequest;
+import org.example.domain.post.presentation.dto.request.UpdatePostRequest;
+import org.example.domain.post.presentation.dto.response.CreatePostResponse;
+import org.example.domain.post.presentation.dto.response.PostResponse;
+import org.example.domain.post.service.PostService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,6 +1,6 @@
-package org.example.post.presentation.dto.request;
+package org.example.domain.post.presentation.dto.request;
 
-import org.example.post.domain.model.BoardType;
+import org.example.domain.post.domain.model.BoardType;
 
 public record CreatePostRequest(
         String title,

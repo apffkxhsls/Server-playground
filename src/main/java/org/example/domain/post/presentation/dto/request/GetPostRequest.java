@@ -1,7 +1,7 @@
-package org.example.post.presentation.dto.request;
+package org.example.domain.post.presentation.dto.request;
 
 import org.example.global.exception.BaseException;
-import org.example.post.domain.code.PostErrorCode;
+import org.example.domain.post.domain.code.PostErrorCode;
 
 public record GetPostRequest(int page, int size) {
     public void validate() {

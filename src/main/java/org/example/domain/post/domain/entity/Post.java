@@ -1,7 +1,8 @@
-package org.example.post.domain.entity;
+package org.example.domain.post.domain.entity;
 
 import jakarta.persistence.*;
-import org.example.post.domain.model.BoardType;
+import org.example.domain.post.domain.model.BoardType;
+import org.example.domain.user.domain.entity.User;
 
 @Entity  // "이 클래스를 DB 테이블과 매핑해요" — 영속성 컨텍스트가 이 클래스를 관리해요
 public class Post {

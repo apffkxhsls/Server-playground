@@ -1,7 +1,7 @@
-package org.example.post.domain.exception;
+package org.example.domain.post.domain.exception;
 
 import org.example.global.exception.BaseException;
-import org.example.post.domain.code.PostErrorCode;
+import org.example.domain.post.domain.code.PostErrorCode;
 
 public class PostNotFoundException extends BaseException {
     public PostNotFoundException() {

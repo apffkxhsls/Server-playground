@@ -1,16 +1,16 @@
-package org.example.post.service;
+package org.example.domain.post.service;
 
 
-import org.example.post.domain.entity.Post;
-import org.example.post.domain.entity.User;
-import org.example.post.domain.exception.PostNotFoundException;
-import org.example.post.domain.model.BoardType;
-import org.example.post.domain.repository.PostRepository;
-import org.example.post.domain.repository.UserRepository;
-import org.example.post.presentation.dto.request.CreatePostRequest;
-import org.example.post.presentation.dto.request.UpdatePostRequest;
-import org.example.post.presentation.dto.response.CreatePostResponse;
-import org.example.post.presentation.dto.response.PostResponse;
+import org.example.domain.post.domain.entity.Post;
+import org.example.domain.user.domain.entity.User;
+import org.example.domain.post.domain.exception.PostNotFoundException;
+import org.example.domain.post.domain.model.BoardType;
+import org.example.domain.post.domain.repository.PostRepository;
+import org.example.domain.user.domain.repository.UserRepository;
+import org.example.domain.post.presentation.dto.request.CreatePostRequest;
+import org.example.domain.post.presentation.dto.request.UpdatePostRequest;
+import org.example.domain.post.presentation.dto.response.CreatePostResponse;
+import org.example.domain.post.presentation.dto.response.PostResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
