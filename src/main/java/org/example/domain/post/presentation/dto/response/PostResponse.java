@@ -8,8 +8,7 @@ public record PostResponse(
         String title,
         String content,
         Long userId,
-        BoardType boardType,
-        String createdAt
+        BoardType boardType
 ) {
     public PostResponse(Post post) {
         this(
@@ -17,8 +16,7 @@ public record PostResponse(
                 post.getTitle(),
                 post.getContent(),
                 post.getUser().getId(),
-                post.getBoardType(),
-                post.getCreatedAt()
+                post.getBoardType()
         );
     }
 

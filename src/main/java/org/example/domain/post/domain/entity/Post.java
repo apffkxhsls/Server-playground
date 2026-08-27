@@ -3,9 +3,10 @@ package org.example.domain.post.domain.entity;
 import jakarta.persistence.*;
 import org.example.domain.post.domain.model.BoardType;
 import org.example.domain.user.domain.entity.User;
+import org.example.global.entity.BaseTimeEntity;
 
 @Entity  // "이 클래스를 DB 테이블과 매핑해요" — 영속성 컨텍스트가 이 클래스를 관리해요
-public class Post {
+public class Post extends BaseTimeEntity {
 
     @Id // PK
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,16 +23,13 @@ public class Post {
     @Enumerated(EnumType.STRING)  // enum 문자열 저장을 지정하는 어노테이션
     private BoardType boardType;
 
-    private String createdAt;  // 목록, 상세 화면 — 작성 시각
-
     protected Post() {}
 
-    public Post(String title, String content, User user, BoardType boardType, String createdAt) {
+    public Post(String title, String content, User user, BoardType boardType) {
         this.title = title;
         this.content = content;
         this.user = user;
         this.boardType = boardType;
-        this.createdAt = createdAt;
     }
 
     public Long getId() {
@@ -52,10 +50,6 @@ public class Post {
 
     public BoardType getBoardType() {
         return boardType;
-    }
-
-    public String getCreatedAt() {
-        return createdAt;
     }
 
     public void update(String title, String content) {

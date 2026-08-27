@@ -33,15 +33,13 @@ public class PostService {
         // 1. 유효성 검증
         request.validate();
         // 2. Post 도메인 객체 생성
-        String createdAt = java.time.LocalDateTime.now().toString();
         User user = userRepository.findById(request.userId())
                 .orElseThrow(() -> new IllegalArgumentException("작성자를 찾을 수 없습니다."));
         Post post = new Post(
                 request.title(),
                 request.content(),
                 user,
-                request.boardType(),
-                createdAt
+                request.boardType()
         );
         // 3. 저장
         Post create = postRepository.save(post);
