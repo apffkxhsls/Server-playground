@@ -19,6 +19,6 @@ public record BaseResponse<T>(
     public static <T> ResponseEntity<BaseResponse<T>> failure(ErrorCode errorCode) {
         return ResponseEntity
                 .status(errorCode.getHttpStatus())
-                .body(new BaseResponse<>(errorCode.getCode(), true, errorCode.getMessage(), null));
+                .body(new BaseResponse<>(errorCode.getCode(), false, errorCode.getMessage(), null));
     }
 }
