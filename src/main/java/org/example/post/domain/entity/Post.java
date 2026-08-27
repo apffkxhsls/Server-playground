@@ -14,9 +14,9 @@ public class Post {
 
     private String content;   // 목록(미리보기), 상세(전체) 화면 — 내용
 
-    @ManyToOne(fetch = FetchType.LAZY)  // author : Post = 1 : N
+    @ManyToOne(fetch = FetchType.LAZY)  // user : Post = 1 : N
     @JoinColumn(name = "user_id")       // post 테이블에 user_id FK 컬럼 생성
-    private User author;    // 목록, 상세 화면 — 글쓴이
+    private User user;    // 목록, 상세 화면 — 글쓴이
 
     @Enumerated(EnumType.STRING)  // enum 문자열 저장을 지정하는 어노테이션
     private BoardType boardType;
@@ -25,10 +25,10 @@ public class Post {
 
     protected Post() {}
 
-    public Post(String title, String content, User author, BoardType boardType, String createdAt) {
+    public Post(String title, String content, User user, BoardType boardType, String createdAt) {
         this.title = title;
         this.content = content;
-        this.author = author;
+        this.user = user;
         this.boardType = boardType;
         this.createdAt = createdAt;
     }
@@ -45,8 +45,8 @@ public class Post {
         return content;
     }
 
-    public User getAuthor() {
-        return author;
+    public User getUser() {
+        return user;
     }
 
     public BoardType getBoardType() {

@@ -7,7 +7,7 @@ public record PostResponse(
         Long id,
         String title,
         String content,
-        Long authorId,
+        Long userId,
         BoardType boardType,
         String createdAt
 ) {
@@ -16,7 +16,7 @@ public record PostResponse(
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
-                post.getAuthor().getId(),
+                post.getUser().getId(),
                 post.getBoardType(),
                 post.getCreatedAt()
         );

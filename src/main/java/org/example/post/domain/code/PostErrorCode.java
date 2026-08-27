@@ -9,7 +9,7 @@ public enum PostErrorCode implements ErrorCode {
     INVALID_POST_CONTENT(HttpStatus.BAD_REQUEST, "PST-003", "게시글 내용은 필수입니다."),
     INVALID_BOARD_TYPE(HttpStatus.BAD_REQUEST, "PST-004", "게시판 종류는 필수입니다."),
     INVALID_PAGINATION(HttpStatus.BAD_REQUEST, "PST-005", "페이지 요청 값이 올바르지 않습니다."),
-    INVALID_POST_AUTHOR(HttpStatus.BAD_REQUEST, "PST-006", "게시글 작성자는 필수입니다."),
+    INVALID_POST_USER(HttpStatus.BAD_REQUEST, "PST-006", "게시글 작성자는 필수입니다."),
     ;
 
     private final HttpStatus httpStatus;

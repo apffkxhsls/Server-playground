@@ -34,12 +34,12 @@ public class PostService {
         request.validate();
         // 2. Post 도메인 객체 생성
         String createdAt = java.time.LocalDateTime.now().toString();
-        User author = userRepository.findById(request.authorId())
+        User user = userRepository.findById(request.userId())
                 .orElseThrow(() -> new IllegalArgumentException("작성자를 찾을 수 없습니다."));
         Post post = new Post(
                 request.title(),
                 request.content(),
-                author,
+                user,
                 request.boardType(),
                 createdAt
         );
