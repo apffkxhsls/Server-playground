@@ -1,25 +1,21 @@
 package org.example.domain.post.presentation.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.example.domain.post.domain.model.BoardType;
 
 public record CreatePostRequest(
+        @NotBlank(message = "제목은 필수입니다.")
+        @Size(max = 50, message = "제목은 50자를 초과할 수 없습니다.")
         String title,
+
+        @NotBlank(message = "내용은 필수입니다.")
+        @Size(max = 500, message = "내용은 500자를 초과할 수 없습니다.")
         String content,
-        Long userId,
+
+        @NotBlank(message = "작성자는 필수입니다.")
+        String user,
+
+        @NotBlank(message = "게시판 선택은 필수입니다.")
         BoardType boardType
-) {
-    public void validate() {
-        if (title == null || title.isBlank()) {
-            throw new IllegalArgumentException("제목은 필수입니다!");
-        }
-        if (content == null || content.isBlank()) {
-            throw new IllegalArgumentException("내용은 필수입니다!");
-        }
-        if (userId == null) {
-            throw new IllegalArgumentException("작성자 ID는 필수입니다!");
-        }
-        if (boardType == null) {
-            throw new IllegalArgumentException("게시판 선택은 필수입니다!");
-        }
-    }
-}
+) {}

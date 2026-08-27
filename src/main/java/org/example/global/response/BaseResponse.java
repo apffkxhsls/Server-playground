@@ -21,4 +21,11 @@ public record BaseResponse<T>(
                 .status(errorCode.getHttpStatus())
                 .body(new BaseResponse<>(errorCode.getCode(), false, errorCode.getMessage(), null));
     }
+
+    // Handler에 있는 message 사용하기 위해서
+    public static <T> ResponseEntity<BaseResponse<T>> failure(ErrorCode errorCode, String message) {
+        return ResponseEntity
+                .status(errorCode.getHttpStatus())
+                .body(new BaseResponse<>(errorCode.getCode(), false, message, null));
+    }
 }
