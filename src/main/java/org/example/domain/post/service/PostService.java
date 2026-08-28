@@ -2,15 +2,19 @@ package org.example.domain.post.service;
 
 
 import org.example.domain.post.domain.entity.Post;
-import org.example.domain.user.domain.entity.User;
+import org.example.domain.post.domain.entity.PostReaction;
 import org.example.domain.post.domain.exception.PostNotFoundException;
 import org.example.domain.post.domain.model.BoardType;
+import org.example.domain.post.domain.repository.PostReactionRepository;
 import org.example.domain.post.domain.repository.PostRepository;
-import org.example.domain.user.domain.repository.UserRepository;
 import org.example.domain.post.presentation.dto.request.CreatePostRequest;
+import org.example.domain.post.presentation.dto.request.PostReactionRequest;
 import org.example.domain.post.presentation.dto.request.UpdatePostRequest;
 import org.example.domain.post.presentation.dto.response.CreatePostResponse;
+import org.example.domain.post.presentation.dto.response.PostReactionResponse;
 import org.example.domain.post.presentation.dto.response.PostResponse;
+import org.example.domain.user.domain.entity.User;
+import org.example.domain.user.domain.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,10 +25,16 @@ import java.util.Optional;
 public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final PostReactionRepository postReactionRepository;
 
-    public PostService(PostRepository postRepository, UserRepository userRepository) {
+    public PostService(
+            PostRepository postRepository,
+            UserRepository userRepository,
+            PostReactionRepository postReactionRepository
+    ) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
+        this.postReactionRepository = postReactionRepository;
     }
 
     // CREATE
@@ -43,6 +53,25 @@ public class PostService {
         Post create = postRepository.save(post);
         // 4. 응답 DTO 조립해서 반환
         return new CreatePostResponse(create.getId());
+    }
+
+    // POST_REACTION - Like
+    @Transactional
+    public PostReactionResponse likePost(Long postId, PostReactionRequest request) {
+        User user = userRepository.findById(request.userId())
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        Post post = findPostOrThrow(postId);
+        Optional<PostReaction> postReaction = postReactionRepository.findByUserAndPost(user, post);
+
+        if (postReaction.isPresent()) {
+            throw new IllegalArgumentException("좋아요가 이미 눌러져있습니다.");
+        } else {
+            PostReaction likeReaction = new PostReaction(user, post);
+            PostReaction like = postReactionRepository.save(likeReaction);
+            long likeCount = postReactionRepository.countByPost(post);
+
+            return new PostReactionResponse(postId, likeCount);
+        }
     }
 
     // READ - 목록 조회

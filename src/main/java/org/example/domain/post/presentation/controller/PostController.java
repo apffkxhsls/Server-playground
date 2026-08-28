@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.example.domain.post.presentation.dto.request.PostReactionRequest;
+import org.example.domain.post.presentation.dto.response.PostReactionResponse;
 import org.example.global.response.BaseResponse;
 import org.example.domain.post.domain.code.PostSuccessCode;
 import org.example.domain.post.domain.model.BoardType;
@@ -43,6 +45,23 @@ public class PostController {
         return BaseResponse.success(PostSuccessCode.POST_CREATED, response);
     }
 
+    // POST /posts
+    @Operation(summary = "게시글 좋아요", description = "게시글 좋아요를 생성합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "게시글 좋아요 성공"),
+            @ApiResponse(responseCode = "400", description = "좋아요 유효성 검증 실패"),
+            @ApiResponse(responseCode = "404", description = "좋아요를 누를 수 없음 - 존재하지 않는 ID로 요청한 경우")
+    })
+    @PostMapping("/{postId}/like")
+    public ResponseEntity<BaseResponse<PostReactionResponse>> likePost(
+            @Parameter(description = "게시글 ID", example = "1", required = true)
+            @PathVariable Long postId,
+            @Valid @RequestBody PostReactionRequest request
+    ) {
+        PostReactionResponse response = postService.likePost(postId, request);
+        return BaseResponse.success(PostSuccessCode.POST_LIKE, response);
+    }
+
     // GET /posts
     @GetMapping
     public ResponseEntity<BaseResponse<List<PostResponse>>> getAllPosts(
@@ -64,30 +83,30 @@ public class PostController {
             @ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음 — 존재하지 않는 ID로 요청한 경우"),
             @ApiResponse(responseCode = "400", description = "잘못된 요청 — ID가 숫자가 아닌 경우")
     })
-    @GetMapping("/{id}")
+    @GetMapping("/{postId}")
     public ResponseEntity<BaseResponse<PostResponse>> getPost(
             @Parameter(description = "게시글 ID", example = "1", required = true)
-            @PathVariable Long id
+            @PathVariable Long postId
     ) {
-        return BaseResponse.success(PostSuccessCode.POST_READ, postService.getPost(id));
+        return BaseResponse.success(PostSuccessCode.POST_READ, postService.getPost(postId));
     }
 
     // PUT /posts/{id}
-    @PutMapping("/{id}")
+    @PutMapping("/{postId}")
     public ResponseEntity<BaseResponse<PostResponse>> updatePost(
-            @PathVariable Long id,
+            @PathVariable Long postId,
             @RequestBody UpdatePostRequest request
     ) {
-        PostResponse response = postService.updatePost(id, request);
+        PostResponse response = postService.updatePost(postId, request);
         return BaseResponse.success(PostSuccessCode.POST_UPDATED, response);
     }
 
     // DELETE /posts/{id}
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{postId}")
     public ResponseEntity<BaseResponse<Void>> deletePost(
-            @PathVariable Long id
+            @PathVariable Long postId
     ) {
-        postService.deletePost(id);
+        postService.deletePost(postId);
         return BaseResponse.success(PostSuccessCode.POST_DELETED, null);
     }
 }
