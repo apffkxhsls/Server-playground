@@ -109,7 +109,10 @@ public class PostService {
         return posts.stream()
                 .skip((long) page * size)
                 .limit(size)
-                .map(PostResponse::from)
+                .map(post -> {
+                    long likeCount = postReactionRepository.countByPost(post);
+                    return PostResponse.from(post, likeCount);
+                })
                 .toList();
     }
 
@@ -117,7 +120,10 @@ public class PostService {
     @Transactional(readOnly = true)
     public PostResponse getPost(Long id) {
         Post post = findPostOrThrow(id);
-        return PostResponse.from(post);
+
+        long likeCount = postReactionRepository.countByPost(post);
+
+        return PostResponse.from(post, likeCount);
     }
 
     // UPDATE
@@ -125,8 +131,10 @@ public class PostService {
     public PostResponse updatePost(Long id, UpdatePostRequest request) {
         request.validate();
         Post post = findPostOrThrow(id);
+        long likeCount = postReactionRepository.countByPost(post);
+
         post.update(request.newTitle(), request.newContent());
-        return PostResponse.from(post);
+        return PostResponse.from(post, likeCount);
     }
 
     // DELETE

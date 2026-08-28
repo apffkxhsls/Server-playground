@@ -8,19 +8,21 @@ public record PostResponse(
         String title,
         String content,
         Long userId,
-        BoardType boardType
+        BoardType boardType,
+        Long likeCount
 ) {
-    public PostResponse(Post post) {
+    public PostResponse(Post post, Long likeCount) {
         this(
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
                 post.getUser().getId(),
-                post.getBoardType()
+                post.getBoardType(),
+                likeCount
         );
     }
 
-    public static PostResponse from(Post post) {
-        return new PostResponse(post);
+    public static PostResponse from(Post post, Long likeCount) {
+        return new PostResponse(post, likeCount);
     }
 }
