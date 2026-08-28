@@ -53,13 +53,13 @@ public class PostController {
             @ApiResponse(responseCode = "404", description = "좋아요를 누를 수 없음 - 존재하지 않는 ID로 요청한 경우")
     })
     @PostMapping("/{postId}/like")
-    public ResponseEntity<BaseResponse<PostReactionResponse>> likePost(
+    public ResponseEntity<BaseResponse<PostReactionResponse>> saveLikePost(
             @Parameter(description = "게시글 ID", example = "1", required = true)
             @PathVariable Long postId,
             @Valid @RequestBody PostReactionRequest request
     ) {
-        PostReactionResponse response = postService.likePost(postId, request);
-        return BaseResponse.success(PostSuccessCode.POST_LIKE, response);
+        PostReactionResponse response = postService.saveLikePost(postId, request);
+        return BaseResponse.success(PostSuccessCode.POST_SAVE_LIKE, response);
     }
 
     // GET /posts
@@ -108,5 +108,22 @@ public class PostController {
     ) {
         postService.deletePost(postId);
         return BaseResponse.success(PostSuccessCode.POST_DELETED, null);
+    }
+
+    // DELETE /posts/{postId}/like
+    @Operation(summary = "게시글 좋아요 취소", description = "게시글 좋아요를 취소합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "게시글 좋아요 취소 성공"),
+            @ApiResponse(responseCode = "400", description = "좋아요 취소 유효성 검증 실패"),
+            @ApiResponse(responseCode = "404", description = "좋아요를 취소할 수 없음 - 존재하지 않는 ID로 요청한 경우")
+    })
+    @DeleteMapping("/{postId}/like")
+    public ResponseEntity<BaseResponse<PostReactionResponse>> deleteLikePost(
+            @Parameter(description = "게시글 ID", example = "1", required = true)
+            @PathVariable Long postId,
+            @Valid @RequestBody PostReactionRequest request
+    ) {
+        PostReactionResponse response = postService.deleteLikePost(postId, request);
+        return BaseResponse.success(PostSuccessCode.POST_DELETE_LIKE, response);
     }
 }

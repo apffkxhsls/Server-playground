@@ -57,7 +57,7 @@ public class PostService {
 
     // POST_REACTION - Like
     @Transactional
-    public PostReactionResponse likePost(Long postId, PostReactionRequest request) {
+    public PostReactionResponse saveLikePost(Long postId, PostReactionRequest request) {
         User user = userRepository.findById(request.userId())
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         Post post = findPostOrThrow(postId);
@@ -67,7 +67,25 @@ public class PostService {
             throw new IllegalArgumentException("좋아요가 이미 눌러져있습니다.");
         } else {
             PostReaction likeReaction = new PostReaction(user, post);
-            PostReaction like = postReactionRepository.save(likeReaction);
+            postReactionRepository.save(likeReaction);
+            long likeCount = postReactionRepository.countByPost(post);
+
+            return new PostReactionResponse(postId, likeCount);
+        }
+    }
+
+    // POST_REACTION - Like 취소
+    @Transactional
+    public PostReactionResponse deleteLikePost(Long postId, PostReactionRequest request) {
+        User user = userRepository.findById(request.userId())
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        Post post = findPostOrThrow(postId);
+        Optional<PostReaction> postReaction = postReactionRepository.findByUserAndPost(user, post);
+
+        if (postReaction.isEmpty()) {
+            throw new IllegalArgumentException("좋아요가 눌려있지 않습니다.");
+        } else {
+            postReactionRepository.delete(postReaction.get());
             long likeCount = postReactionRepository.countByPost(post);
 
             return new PostReactionResponse(postId, likeCount);
