@@ -178,8 +178,8 @@ public class PostService {
 
     // SEARCH
     @Transactional(readOnly = true)
-    public List<PostResponse> searchPosts(String keyword) {
-        List<Post> posts = postRepository.searchByTitleWithUser(keyword);
+    public List<PostResponse> searchPosts(String keyword, String nickname) {
+        List<Post> posts = postRepository.searchByTitleAndUser(keyword, nickname);
 
         List<PostLikeCount> likes = postReactionRepository.findLikeCountsByPostIn(posts);
         Map<Long, Long> likeCountMap = likes.stream()

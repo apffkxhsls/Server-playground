@@ -94,9 +94,11 @@ public class PostController {
     // GET /posts/search
     @GetMapping("/search")
     public ResponseEntity<BaseResponse<List<PostResponse>>> searchPosts(
-            @RequestParam String keyword
+            // (required = false)로 동적 구현
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String nickname
     ) {
-        return BaseResponse.success(PostSuccessCode.POST_LIST_READ, postService.searchPosts(keyword));
+        return BaseResponse.success(PostSuccessCode.POST_LIST_READ, postService.searchPosts(keyword, nickname));
     }
 
     // PUT /posts/{id}

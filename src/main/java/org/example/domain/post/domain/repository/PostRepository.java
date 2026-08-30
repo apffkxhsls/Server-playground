@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface PostRepository extends JpaRepository<Post, Long> {
+public interface PostRepository extends JpaRepository<Post, Long>, PostRepositoryCustom {
     @Query("SELECT p FROM Post p JOIN FETCH p.user")
     List<Post> findAllWithUser();
 
@@ -25,7 +25,4 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Lock(LockModeType.OPTIMISTIC_FORCE_INCREMENT)
     @Query("SELECT p FROM Post p WHERE p.id = :postId")
     Optional<Post> findByIdWithOptimisticLock(@Param("postId") Long postId);
-
-    @Query("SELECT p FROM Post p JOIN FETCH p.user WHERE p.title LIKE %:keyword%")
-    List<Post> searchByTitleWithUser(@Param("keyword")String keyword);
 }
