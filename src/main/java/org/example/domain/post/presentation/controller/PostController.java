@@ -91,6 +91,14 @@ public class PostController {
         return BaseResponse.success(PostSuccessCode.POST_READ, postService.getPost(postId));
     }
 
+    // GET /posts/search
+    @GetMapping("/search")
+    public ResponseEntity<BaseResponse<List<PostResponse>>> searchPosts(
+            @RequestParam String keyword
+    ) {
+        return BaseResponse.success(PostSuccessCode.POST_LIST_READ, postService.searchPosts(keyword));
+    }
+
     // PUT /posts/{id}
     @PutMapping("/{postId}")
     public ResponseEntity<BaseResponse<PostResponse>> updatePost(

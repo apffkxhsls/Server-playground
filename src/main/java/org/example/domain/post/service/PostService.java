@@ -175,4 +175,21 @@ public class PostService {
         Optional<Post> post = postRepository.findById(id);
         return post.orElseThrow(PostNotFoundException::new);
     }
+
+    // SEARCH
+    @Transactional(readOnly = true)
+    public List<PostResponse> searchPosts(String keyword) {
+        List<Post> posts = postRepository.searchByTitleWithUser(keyword);
+
+        List<PostLikeCount> likes = postReactionRepository.findLikeCountsByPostIn(posts);
+        Map<Long, Long> likeCountMap = likes.stream()
+                .collect(Collectors.toMap(PostLikeCount::postId, PostLikeCount::likeCount));
+
+        return posts.stream()
+                .map(post -> {
+                    long likeCount = likeCountMap.getOrDefault(post.getId(), 0L);
+                    return PostResponse.from(post, likeCount);
+                })
+                .toList();
+    }
 }

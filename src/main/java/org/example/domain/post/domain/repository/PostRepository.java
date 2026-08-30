@@ -25,4 +25,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Lock(LockModeType.OPTIMISTIC_FORCE_INCREMENT)
     @Query("SELECT p FROM Post p WHERE p.id = :postId")
     Optional<Post> findByIdWithOptimisticLock(@Param("postId") Long postId);
+
+    @Query("SELECT p FROM Post p JOIN FETCH p.user WHERE p.title LIKE %:keyword%")
+    List<Post> searchByTitleWithUser(@Param("keyword")String keyword);
 }

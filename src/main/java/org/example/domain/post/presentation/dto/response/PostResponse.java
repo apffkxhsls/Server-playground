@@ -8,6 +8,7 @@ public record PostResponse(
         String title,
         String content,
         Long userId,
+        String nickname,
         BoardType boardType,
         Long likeCount
 ) {
@@ -17,6 +18,7 @@ public record PostResponse(
                 post.getTitle(),
                 post.getContent(),
                 post.getUser().getId(),
+                post.getUser().getNickname(),
                 post.getBoardType(),
                 likeCount
         );
