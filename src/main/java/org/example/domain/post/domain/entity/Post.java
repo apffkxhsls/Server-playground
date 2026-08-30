@@ -4,7 +4,13 @@ import jakarta.persistence.*;
 import org.example.domain.post.domain.model.BoardType;
 import org.example.domain.user.domain.entity.User;
 import org.example.global.entity.BaseTimeEntity;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
+import java.time.LocalDateTime;
+
+@SQLDelete(sql = "UPDATE post SET deleted_at = NOW() WHERE id = ?")
+@Where(clause = "deleted_at IS NULL")
 @Entity  // "이 클래스를 DB 테이블과 매핑해요" — 영속성 컨텍스트가 이 클래스를 관리해요
 public class Post extends BaseTimeEntity {
 
@@ -22,6 +28,9 @@ public class Post extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)  // enum 문자열 저장을 지정하는 어노테이션
     private BoardType boardType;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     protected Post() {}
 
