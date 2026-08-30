@@ -14,6 +14,9 @@ import java.time.LocalDateTime;
 @Entity  // "이 클래스를 DB 테이블과 매핑해요" — 영속성 컨텍스트가 이 클래스를 관리해요
 public class Post extends BaseTimeEntity {
 
+    @Version
+    private Long version;
+
     @Id // PK
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;          // 게시글 상세 화면 — 특정 게시글 식별용

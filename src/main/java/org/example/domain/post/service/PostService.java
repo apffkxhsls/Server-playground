@@ -63,7 +63,9 @@ public class PostService {
     public PostReactionResponse saveLikePost(Long postId, PostReactionRequest request) {
         User user = userRepository.findById(request.userId())
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-        Post post = findPostOrThrow(postId);
+        Post post = postRepository
+                .findByIdWithOptimisticLock(postId)
+                .orElseThrow(PostNotFoundException::new);
         Optional<PostReaction> postReaction = postReactionRepository.findByUserAndPost(user, post);
 
         if (postReaction.isPresent()) {
@@ -82,7 +84,9 @@ public class PostService {
     public PostReactionResponse deleteLikePost(Long postId, PostReactionRequest request) {
         User user = userRepository.findById(request.userId())
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-        Post post = findPostOrThrow(postId);
+        Post post = postRepository
+                .findByIdWithOptimisticLock(postId)
+                .orElseThrow(PostNotFoundException::new);
         Optional<PostReaction> postReaction = postReactionRepository.findByUserAndPost(user, post);
 
         if (postReaction.isEmpty()) {
