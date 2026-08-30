@@ -16,6 +16,9 @@ import org.example.domain.post.presentation.dto.response.PostReactionResponse;
 import org.example.domain.post.presentation.dto.response.PostResponse;
 import org.example.domain.user.domain.entity.User;
 import org.example.domain.user.domain.repository.UserRepository;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,6 +63,11 @@ public class PostService {
 
     // POST_REACTION - Like
     @Transactional
+    @Retryable(
+            retryFor = ObjectOptimisticLockingFailureException.class,
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 100)
+    )
     public PostReactionResponse saveLikePost(Long postId, PostReactionRequest request) {
         User user = userRepository.findById(request.userId())
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
@@ -81,6 +89,11 @@ public class PostService {
 
     // POST_REACTION - Like 취소
     @Transactional
+    @Retryable(
+            retryFor = ObjectOptimisticLockingFailureException.class,
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 100)
+    )
     public PostReactionResponse deleteLikePost(Long postId, PostReactionRequest request) {
         User user = userRepository.findById(request.userId())
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
