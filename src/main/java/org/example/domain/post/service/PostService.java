@@ -11,6 +11,7 @@ import org.example.domain.post.presentation.dto.request.CreatePostRequest;
 import org.example.domain.post.presentation.dto.request.PostReactionRequest;
 import org.example.domain.post.presentation.dto.request.UpdatePostRequest;
 import org.example.domain.post.presentation.dto.response.CreatePostResponse;
+import org.example.domain.post.presentation.dto.response.PostLikeCount;
 import org.example.domain.post.presentation.dto.response.PostReactionResponse;
 import org.example.domain.post.presentation.dto.response.PostResponse;
 import org.example.domain.user.domain.entity.User;
@@ -19,7 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PostService {
@@ -102,15 +105,23 @@ public class PostService {
         List<Post> posts;
 
         if (boardType == null) {
-            posts = postRepository.findAll();
+            posts = postRepository.findAllWithUser();
         } else {
-            posts = postRepository.findAllByBoardType(boardType);
+            posts = postRepository.findAllByBoardTypeWithUser(boardType);
         }
-        return posts.stream()
+
+        List<Post> pagedPosts = posts.stream()
                 .skip((long) page * size)
                 .limit(size)
+                .toList();
+
+        List<PostLikeCount> likes = postReactionRepository.findLikeCountsByPostIn(pagedPosts);
+        Map<Long, Long> likeCountMap = likes.stream()
+                .collect(Collectors.toMap(PostLikeCount::postId, PostLikeCount::likeCount));
+
+        return pagedPosts.stream()
                 .map(post -> {
-                    long likeCount = postReactionRepository.countByPost(post);
+                    long likeCount = likeCountMap.getOrDefault(post.getId(), 0L);
                     return PostResponse.from(post, likeCount);
                 })
                 .toList();
