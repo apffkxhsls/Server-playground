@@ -15,3 +15,9 @@ spring:
       hibernate:
         format_sql: true
     show-sql: true
+
+  security:
+    jwt:
+      secret: seopsopt-fighting
+      access-token-expires-in-seconds: 1800     # 30분
+      refresh-token-expires-in-seconds: 1209600 # 2주
