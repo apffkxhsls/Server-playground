@@ -12,13 +12,14 @@ public class User {
 
     private String nickname;
 
-    private String email;
+    private String password;
 
-    protected User() {}
+    protected User() {
+    }
 
-    public User(String nickname, String email) {
+    public User(String nickname, String password) {
         this.nickname = nickname;
-        this.email = email;
+        this.password = password;
     }
 
     public Long getId() {
@@ -29,7 +30,7 @@ public class User {
         return this.nickname;
     }
 
-    public String getEmail() {
-        return this.email;
+    public String getPassword() {
+        return this.password;
     }
 }
