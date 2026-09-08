@@ -19,7 +19,8 @@ public class UserService {
     public CreateUserResponse join(CreateUserRequest request) {
         User user = new User(
                 request.nickname(),
-                request.password()
+                request.password(),
+                request.email()
         );
 
         User savedUser = userRepository.save(user);
