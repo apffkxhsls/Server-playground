@@ -4,22 +4,25 @@ import org.example.domain.user.domain.entity.User;
 import org.example.domain.user.domain.repository.UserRepository;
 import org.example.domain.user.presentation.dto.request.CreateUserRequest;
 import org.example.domain.user.presentation.dto.response.CreateUserResponse;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
     public CreateUserResponse join(CreateUserRequest request) {
         User user = new User(
                 request.nickname(),
-                request.password(),
+                passwordEncoder.encode(request.password()),
                 request.email()
         );
 
