@@ -5,7 +5,8 @@ import org.springframework.http.HttpStatus;
 
 public enum AuthSuccessCode implements SuccessCode {
     LOGIN_SUCCESS("AUTH-200", HttpStatus.OK, "로그인에 성공하였습니다."),
-    ME_READ_SUCCESS("AUTH-201", HttpStatus.OK, "내 정보 조회에 성공하였습니다.");
+    ME_READ_SUCCESS("AUTH-201", HttpStatus.OK, "내 정보 조회에 성공하였습니다."),
+    REISSUE_SUCCESS("AUTH-202", HttpStatus.OK, "토큰 재발급에 성공하였습니다.");
 
     private final String code;
     private final HttpStatus httpStatus;
