@@ -3,6 +3,7 @@ package org.example.domain.auth.presentation.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.example.domain.auth.domain.code.AuthSuccessCode;
+import org.example.domain.auth.presentation.dto.request.RefreshTokenRequest;
 import org.example.domain.auth.presentation.dto.request.TokenRequest;
 import org.example.domain.auth.presentation.dto.response.TokenResponse;
 import org.example.domain.auth.service.AuthService;
@@ -47,5 +48,15 @@ public class AuthController {
         );
 
         return BaseResponse.success(AuthSuccessCode.ME_READ_SUCCESS, user);
+    }
+
+    @Operation(summary = "토큰 재발급 (Refresh Token)")
+    @PostMapping("/reissue")
+    public ResponseEntity<BaseResponse<TokenResponse>> reissueToken(
+            @Valid @RequestBody RefreshTokenRequest request
+    ) {
+        TokenResponse tokens = authService.reissue(request.refreshToken());
+
+        return BaseResponse.success(AuthSuccessCode.REISSUE_SUCCESS, tokens);
     }
 }
