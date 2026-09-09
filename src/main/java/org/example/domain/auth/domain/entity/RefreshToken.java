@@ -41,4 +41,12 @@ public class RefreshToken {
         this.token = newToken;
         this.expiresAt = LocalDateTime.now().plusSeconds(expiresInSeconds);
     }
+
+    public boolean isExpired() {
+        return expiresAt.isBefore(LocalDateTime.now());
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
 }

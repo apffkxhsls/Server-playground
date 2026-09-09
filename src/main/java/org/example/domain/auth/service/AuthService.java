@@ -17,7 +17,7 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtService jwtService;
 
-    private AuthService(
+    public AuthService(
             UserRepository userRepository,
             RefreshTokenRepository refreshTokenRepository,
             JwtService jwtService
@@ -41,6 +41,7 @@ public class AuthService {
         return user;
     }
 
+    // 로그인: 두 토큰 동시 발급
     @Transactional
     public TokenResponse login(String email, String password) {
         User user = loginWithCredentials(email, password);
@@ -55,6 +56,40 @@ public class AuthService {
         );
 
         return TokenResponse.of(accessToken, refreshToken);
+    }
+
+    // 재발급: Refresh Token으로 Access Token 재발급
+    @Transactional
+    public TokenResponse reissue(String refreshTokenValue) {
+        Long userId = jwtService.verifyAndGetUserId(refreshTokenValue);
+
+        RefreshToken storedRefreshToken = refreshTokenRepository
+                .findByToken(refreshTokenValue)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 Refresh Token입니다."));
+
+        if (storedRefreshToken.isExpired()) {
+            throw new IllegalArgumentException("만료된 Refresh Token입니다.");
+        }
+
+        if (!storedRefreshToken.getUserId().equals(userId)) {
+            throw new IllegalArgumentException("아이디가 일치하지 않습니다.");
+        }
+
+        User user = getUserById(userId);
+
+        String newAccessToken = jwtService.generateAccessToken(
+                user.getId(),
+                user.getEmail()
+        );
+
+        String newRefreshToken = jwtService.generateRefreshToken(userId);
+
+        storedRefreshToken.rotate(
+                newRefreshToken,
+                refreshTokenExpiresInSeconds
+        );
+
+        return TokenResponse.of(newAccessToken, newRefreshToken);
     }
 
     public User getUserById(Long userId) {
