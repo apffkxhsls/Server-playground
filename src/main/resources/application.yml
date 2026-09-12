@@ -17,17 +17,16 @@ spring:
     show-sql: true
 
     # Google OAuth 클라이언트 설정
-    spring:
-      security:
-        oauth2:
-          client:
-            registration:
-              google:
-                client-id: ${GOOGLE_CLIENT_ID}
-                client-secret: ${GOOGLE_CLIENT_SECRET}
-                scope:
-                  - profile
-                  - email
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope:
+              - profile
+              - email
 
 # JWT 설정
 security:
