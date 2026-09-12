@@ -25,7 +25,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    // security
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    // QAuth
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
     // Retryable
     implementation 'org.springframework.retry:spring-retry'
