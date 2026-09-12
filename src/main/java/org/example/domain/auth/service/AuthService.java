@@ -45,7 +45,8 @@ public class AuthService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
 
-        if (!passwordEncoder.matches(password, user.getPassword())) {
+        if (user.getPassword() == null
+                || !passwordEncoder.matches(password, user.getPassword())) {
             throw new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다.");
         }
 
@@ -108,6 +109,7 @@ public class AuthService {
                 .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
     }
 
+    // 로그아웃
     @Transactional
     public void logout(Long userId, String accessToken) {
         refreshTokenRepository.deleteByUserId(userId);
@@ -116,5 +118,25 @@ public class AuthService {
         BlacklistedAccessToken blacklistedAccessToken = new BlacklistedAccessToken(userId, accessToken, expiresAt);
 
         blacklistedAccessTokenRepository.save(blacklistedAccessToken);
+    }
+
+    // 인증 후 토큰 발급
+    @Transactional
+    public TokenResponse loginWithGoogle(String email, String nickname) {
+        User user = userRepository.findByEmail(email)
+                .orElseGet(() -> userRepository.save(
+                        new User(nickname, null, email)
+                ));
+
+        String accessToken = jwtService.generateAccessToken(user.getId(), user.getEmail());
+        String refreshToken = jwtService.generateRefreshToken(user.getId());
+
+        // 기존 Refresh Token 삭제 후 새로 저장
+        refreshTokenRepository.deleteByUserId(user.getId());
+        refreshTokenRepository.save(
+                RefreshToken.of(user.getId(), refreshToken, refreshTokenExpiresInSeconds)
+        );
+
+        return TokenResponse.of(accessToken, refreshToken);
     }
 }
