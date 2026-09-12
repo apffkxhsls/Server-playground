@@ -25,6 +25,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    // security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    // OAuth
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
     // Retryable
     implementation 'org.springframework.retry:spring-retry'
@@ -42,6 +46,9 @@ dependencies {
     annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
     annotationProcessor "jakarta.annotation:jakarta.annotation-api"
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
+    // JWT
+    implementation 'com.auth0:java-jwt:4.4.0'
 
     testImplementation platform('org.junit:junit-bom:6.0.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'

@@ -12,12 +12,16 @@ public class User {
 
     private String nickname;
 
+    private String password;
+
     private String email;
 
-    protected User() {}
+    protected User() {
+    }
 
-    public User(String nickname, String email) {
+    public User(String nickname, String password, String email) {
         this.nickname = nickname;
+        this.password = password;
         this.email = email;
     }
 
@@ -27,6 +31,10 @@ public class User {
 
     public String getNickname() {
         return this.nickname;
+    }
+
+    public String getPassword() {
+        return this.password;
     }
 
     public String getEmail() {
