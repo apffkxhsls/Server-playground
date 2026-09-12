@@ -16,6 +16,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @Component
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
@@ -46,6 +47,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         response.setStatus(apiResponse.getStatusCode().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         objectMapper.writeValue(response.getWriter(), apiResponse.getBody());
     }
 }
