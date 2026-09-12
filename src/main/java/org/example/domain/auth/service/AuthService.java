@@ -1,6 +1,8 @@
 package org.example.domain.auth.service;
 
+import org.example.domain.auth.domain.entity.BlacklistedAccessToken;
 import org.example.domain.auth.domain.entity.RefreshToken;
+import org.example.domain.auth.domain.repository.BlacklistedAccessTokenRepository;
 import org.example.domain.auth.domain.repository.RefreshTokenRepository;
 import org.example.domain.auth.presentation.dto.response.TokenResponse;
 import org.example.domain.user.domain.entity.User;
@@ -11,22 +13,27 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 public class AuthService {
 
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final BlacklistedAccessTokenRepository blacklistedAccessTokenRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
 
     public AuthService(
             UserRepository userRepository,
             RefreshTokenRepository refreshTokenRepository,
+            BlacklistedAccessTokenRepository blacklistedAccessTokenRepository,
             JwtService jwtService,
             PasswordEncoder passwordEncoder
     ) {
         this.userRepository = userRepository;
         this.refreshTokenRepository = refreshTokenRepository;
+        this.blacklistedAccessTokenRepository = blacklistedAccessTokenRepository;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
     }
@@ -99,5 +106,15 @@ public class AuthService {
     public User getUserById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+    }
+
+    @Transactional
+    public void logout(Long userId, String accessToken) {
+        refreshTokenRepository.deleteByUserId(userId);
+        LocalDateTime expiresAt = jwtService.getExpiresAt(accessToken);
+
+        BlacklistedAccessToken blacklistedAccessToken = new BlacklistedAccessToken(userId, accessToken, expiresAt);
+
+        blacklistedAccessTokenRepository.save(blacklistedAccessToken);
     }
 }

@@ -23,7 +23,7 @@ public class RefreshToken {
     protected RefreshToken() {
     }
 
-    private RefreshToken(Long userId, String token, LocalDateTime expiresAt) {
+    public RefreshToken(Long userId, String token, LocalDateTime expiresAt) {
         this.userId = userId;
         this.token = token;
         this.expiresAt = expiresAt;
