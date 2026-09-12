@@ -16,7 +16,7 @@ spring:
         format_sql: true
     show-sql: true
 
-    # Google QAuth 클라이언트 설정
+    # Google OAuth 클라이언트 설정
     spring:
       security:
         oauth2:
