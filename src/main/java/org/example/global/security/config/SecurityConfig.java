@@ -1,5 +1,6 @@
 package org.example.global.security.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.example.global.security.auth.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,6 +43,13 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/posts/*", "/api/v1/posts/*/like").authenticated()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> response.sendError(
+                                        HttpServletResponse.SC_UNAUTHORIZED,
+                                        "인증이 필요합니다."
+                                )
+                        )
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

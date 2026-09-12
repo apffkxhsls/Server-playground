@@ -5,6 +5,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.example.domain.auth.domain.repository.BlacklistedAccessTokenRepository;
 import org.example.global.security.jwt.JwtService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,9 +21,14 @@ import java.util.Collections;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
+    private final BlacklistedAccessTokenRepository blacklistedAccessTokenRepository;
 
-    public JwtAuthFilter(JwtService jwtService) {
+    public JwtAuthFilter(
+            JwtService jwtService,
+            BlacklistedAccessTokenRepository blacklistedAccessTokenRepository
+    ) {
         this.jwtService = jwtService;
+        this.blacklistedAccessTokenRepository = blacklistedAccessTokenRepository;
     }
 
     @Override
@@ -34,6 +40,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring("Bearer ".length()).trim();
+
+            if (blacklistedAccessTokenRepository.existsByToken(token)) {
+                response.sendError(
+                        HttpServletResponse.SC_UNAUTHORIZED,
+                        "로그아웃된 토큰입니다."
+                );
+                return;
+            }
             try {
                 Long memberId = jwtService.verifyAndGetUserId(token);
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(

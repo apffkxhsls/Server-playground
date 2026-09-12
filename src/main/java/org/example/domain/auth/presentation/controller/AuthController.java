@@ -9,6 +9,7 @@ import org.example.domain.auth.presentation.dto.response.TokenResponse;
 import org.example.domain.auth.service.AuthService;
 import org.example.domain.user.presentation.dto.response.UserResponse;
 import org.example.global.response.BaseResponse;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -58,5 +59,21 @@ public class AuthController {
         TokenResponse tokens = authService.reissue(request.refreshToken());
 
         return BaseResponse.success(AuthSuccessCode.REISSUE_SUCCESS, tokens);
+    }
+
+    @Operation(summary = "로그아웃")
+    @PostMapping("/logout")
+    public ResponseEntity<BaseResponse<Void>> logoutToken(
+            Authentication authentication,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader
+    ) {
+        Long userId = Long.parseLong(authentication.getName());
+        String accessToken = authorizationHeader
+                .substring("Bearer ".length())
+                .trim();
+
+        authService.logout(userId, accessToken);
+
+        return BaseResponse.success(AuthSuccessCode.LOGOUT_SUCCESS, null);
     }
 }
