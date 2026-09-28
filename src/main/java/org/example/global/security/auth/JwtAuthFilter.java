@@ -7,7 +7,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.domain.auth.domain.repository.BlacklistedAccessTokenRepository;
 import org.example.global.security.jwt.JwtService;
+import org.example.global.security.jwt.handler.JwtAuthenticationEntryPoint;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -22,13 +24,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final BlacklistedAccessTokenRepository blacklistedAccessTokenRepository;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     public JwtAuthFilter(
             JwtService jwtService,
-            BlacklistedAccessTokenRepository blacklistedAccessTokenRepository
+            BlacklistedAccessTokenRepository blacklistedAccessTokenRepository,
+            JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint
     ) {
         this.jwtService = jwtService;
         this.blacklistedAccessTokenRepository = blacklistedAccessTokenRepository;
+        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
     }
 
     @Override
@@ -42,9 +47,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String token = header.substring("Bearer ".length()).trim();
 
             if (blacklistedAccessTokenRepository.existsByToken(token)) {
-                response.sendError(
-                        HttpServletResponse.SC_UNAUTHORIZED,
-                        "로그아웃된 토큰입니다."
+                jwtAuthenticationEntryPoint.commence(
+                        request,
+                        response,
+                        new InsufficientAuthenticationException("로그아웃된 토큰입니다.")
                 );
                 return;
             }
