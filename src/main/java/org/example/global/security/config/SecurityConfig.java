@@ -1,7 +1,7 @@
 package org.example.global.security.config;
 
-import jakarta.servlet.http.HttpServletResponse;
 import org.example.global.security.auth.JwtAuthFilter;
+import org.example.global.security.jwt.handler.JwtAuthenticationEntryPoint;
 import org.example.global.security.oauth.OAuth2LoginSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,12 +20,16 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     public SecurityConfig(
             JwtAuthFilter jwtAuthFilter,
-            OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler) {
+            OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler,
+            JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint
+    ) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.oAuth2LoginSuccessHandler = oAuth2LoginSuccessHandler;
+        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
     }
 
     @Bean
@@ -50,11 +54,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint((request, response, authException) -> response.sendError(
-                                        HttpServletResponse.SC_UNAUTHORIZED,
-                                        "인증이 필요합니다."
-                                )
-                        )
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .successHandler(oAuth2LoginSuccessHandler)
