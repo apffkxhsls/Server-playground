@@ -2,6 +2,7 @@ package org.example.global.security.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -54,7 +55,13 @@ public class JwtService {
             throw new IllegalArgumentException("토큰이 없습니다.");
         }
 
-        DecodedJWT jwt = JWT.require(algorithm).build().verify(token);
+        DecodedJWT jwt;
+
+        try {
+            jwt = JWT.require(algorithm).build().verify(token);
+        } catch (JWTVerificationException e) {
+            throw new IllegalArgumentException("유효하지 않거나 만료된 토큰입니다.");
+        }
 
         String tokenType = jwt.getClaim("tokenType").asString();
         if (!expectedTokenType.name().equals(tokenType)) {
