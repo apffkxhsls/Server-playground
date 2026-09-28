@@ -203,7 +203,7 @@ public class PostController {
     public ResponseEntity<BaseResponse<PostResponse>> updatePost(
             @PathVariable Long postId,
             Authentication authentication,
-            @RequestBody UpdatePostRequest request
+            @Valid @RequestBody UpdatePostRequest request
     ) {
         Long userId = Long.parseLong(authentication.getName());
 

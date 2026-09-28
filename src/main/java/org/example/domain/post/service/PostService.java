@@ -160,7 +160,6 @@ public class PostService {
     public PostResponse updatePost(Long id, Long userId, UpdatePostRequest request) {
         Post post = findPostOrThrow(id);
         validatePostOwner(post, userId);
-        request.validate();
         long likeCount = postReactionRepository.countByPost(post);
 
         post.update(request.newTitle(), request.newContent());
