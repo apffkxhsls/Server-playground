@@ -35,21 +35,6 @@ public class AuthController {
         return BaseResponse.success(AuthSuccessCode.LOGIN_SUCCESS, tokens);
     }
 
-    @Operation(summary = "내 정보 조회 (Access Token 검증)")
-    @GetMapping("/me")
-    public ResponseEntity<BaseResponse<UserResponse>> me(Authentication authentication) {
-
-        if (authentication == null || authentication.getPrincipal() == null) {
-            throw new IllegalArgumentException("인증되지 않았습니다.");
-        }
-
-        Long userId = Long.parseLong(authentication.getName());
-        UserResponse user = UserResponse.from(
-                authService.getUserById(userId)
-        );
-
-        return BaseResponse.success(AuthSuccessCode.ME_READ_SUCCESS, user);
-    }
 
     @Operation(summary = "토큰 재발급 (Refresh Token)")
     @PostMapping("/reissue")
@@ -75,5 +60,21 @@ public class AuthController {
         authService.logout(userId, accessToken);
 
         return BaseResponse.success(AuthSuccessCode.LOGOUT_SUCCESS, null);
+    }
+
+    @Operation(summary = "내 정보 조회 (Access Token 검증)")
+    @GetMapping("/me")
+    public ResponseEntity<BaseResponse<UserResponse>> me(Authentication authentication) {
+
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new IllegalArgumentException("인증되지 않았습니다.");
+        }
+
+        Long userId = Long.parseLong(authentication.getName());
+        UserResponse user = UserResponse.from(
+                authService.getUserById(userId)
+        );
+
+        return BaseResponse.success(AuthSuccessCode.ME_READ_SUCCESS, user);
     }
 }
