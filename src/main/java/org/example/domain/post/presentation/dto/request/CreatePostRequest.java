@@ -10,7 +10,6 @@ public record CreatePostRequest(
         @Size(max = 50, message = "제목은 50자를 초과할 수 없습니다.")
         String title,
 
-        @NotBlank(message = "내용은 필수입니다.")
         @Size(max = 500, message = "내용은 500자를 초과할 수 없습니다.")
         String content,
 
