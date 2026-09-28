@@ -6,16 +6,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.example.domain.post.presentation.dto.request.PostReactionRequest;
-import org.example.domain.post.presentation.dto.response.PostReactionResponse;
-import org.example.global.response.BaseResponse;
 import org.example.domain.post.domain.code.PostSuccessCode;
 import org.example.domain.post.domain.model.BoardType;
 import org.example.domain.post.presentation.dto.request.CreatePostRequest;
+import org.example.domain.post.presentation.dto.request.PostReactionRequest;
 import org.example.domain.post.presentation.dto.request.UpdatePostRequest;
 import org.example.domain.post.presentation.dto.response.CreatePostResponse;
+import org.example.domain.post.presentation.dto.response.PostReactionResponse;
 import org.example.domain.post.presentation.dto.response.PostResponse;
 import org.example.domain.post.service.PostService;
+import org.example.global.response.BaseResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,6 +45,42 @@ public class PostController {
         return BaseResponse.success(PostSuccessCode.POST_CREATED, response);
     }
 
+
+    // GET /posts
+    @Operation(summary = "게시글 목록 조회", description = "게시글 목록을 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "게시글 목록 조회 성공"),
+    })
+    @GetMapping
+    public ResponseEntity<BaseResponse<List<PostResponse>>> getAllPosts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            // boardType 파라미터는 없어도 요청을 오류로 처리하지 않는다는 의미
+            @RequestParam(required = false) BoardType boardType
+    ) {
+        return BaseResponse.success(PostSuccessCode.POST_LIST_READ, postService.getAllPosts(page, size, boardType));
+    }
+
+
+    // GET /posts/{id}
+    @Operation(
+            summary = "게시글 단건 조회",           // Swagger UI에서 API 이름으로 보임
+            description = "게시글 ID로 특정 게시글을 조회합니다. 삭제된 게시글은 조회되지 않아요."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청 — ID가 숫자가 아닌 경우"),
+            @ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음 — 존재하지 않는 ID로 요청한 경우")
+    })
+    @GetMapping("/{postId}")
+    public ResponseEntity<BaseResponse<PostResponse>> getPost(
+            @Parameter(description = "게시글 ID", example = "1", required = true)
+            @PathVariable Long postId
+    ) {
+        return BaseResponse.success(PostSuccessCode.POST_READ, postService.getPost(postId));
+    }
+
+
     // POST /posts
     @Operation(summary = "게시글 공감", description = "게시글 공감를 생성합니다.")
     @ApiResponses({
@@ -62,63 +98,6 @@ public class PostController {
         return BaseResponse.success(PostSuccessCode.POST_SAVE_LIKE, response);
     }
 
-    // GET /posts
-    @GetMapping
-    public ResponseEntity<BaseResponse<List<PostResponse>>> getAllPosts(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            // boardType 파라미터는 없어도 요청을 오류로 처리하지 않는다는 의미
-            @RequestParam(required = false) BoardType boardType
-    ) {
-        return BaseResponse.success(PostSuccessCode.POST_LIST_READ, postService.getAllPosts(page, size, boardType));
-    }
-
-    // GET /posts/{id}
-    @Operation(
-            summary = "게시글 단건 조회",           // Swagger UI에서 API 이름으로 보임
-            description = "게시글 ID로 특정 게시글을 조회합니다. 삭제된 게시글은 조회되지 않아요."
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "조회 성공"),
-            @ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음 — 존재하지 않는 ID로 요청한 경우"),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청 — ID가 숫자가 아닌 경우")
-    })
-    @GetMapping("/{postId}")
-    public ResponseEntity<BaseResponse<PostResponse>> getPost(
-            @Parameter(description = "게시글 ID", example = "1", required = true)
-            @PathVariable Long postId
-    ) {
-        return BaseResponse.success(PostSuccessCode.POST_READ, postService.getPost(postId));
-    }
-
-    // GET /posts/search
-    @GetMapping("/search")
-    public ResponseEntity<BaseResponse<List<PostResponse>>> searchPosts(
-            // (required = false)로 동적 구현
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String nickname
-    ) {
-        return BaseResponse.success(PostSuccessCode.POST_LIST_READ, postService.searchPosts(keyword, nickname));
-    }
-
-    // PUT /posts/{id}
-    @PutMapping("/{postId}")
-    public ResponseEntity<BaseResponse<PostResponse>> updatePost(
-            @PathVariable Long postId,
-            @RequestBody UpdatePostRequest request
-    ) {
-        PostResponse response = postService.updatePost(postId, request);
-        return BaseResponse.success(PostSuccessCode.POST_UPDATED, response);
-    }
-
-    // DELETE /posts/{id}
-    @DeleteMapping("/{postId}")
-    public ResponseEntity<BaseResponse<Void>> deletePost(
-            @PathVariable Long postId
-    ) {
-        postService.deletePost(postId);
-        return BaseResponse.success(PostSuccessCode.POST_DELETED, null);
-    }
 
     // DELETE /posts/{postId}/like
     @Operation(summary = "게시글 공감 취소", description = "게시글 공감를 취소합니다.")
@@ -135,5 +114,54 @@ public class PostController {
     ) {
         PostReactionResponse response = postService.deleteLikePost(postId, request);
         return BaseResponse.success(PostSuccessCode.POST_DELETE_LIKE, response);
+    }
+
+
+    // GET /posts/search
+    @Operation(summary = "게시글 검색", description = "게시글을 검색합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "게시글 목록 조회 성공")
+    })
+    @GetMapping("/search")
+    public ResponseEntity<BaseResponse<List<PostResponse>>> searchPosts(
+            // (required = false)로 동적 구현
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String nickname
+    ) {
+        return BaseResponse.success(PostSuccessCode.POST_LIST_READ, postService.searchPosts(keyword, nickname));
+    }
+
+
+    // PUT /posts/{id}
+    @Operation(summary = "게시글 수정", description = "게시글을 수정합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "게시글 수정 성공"),
+            @ApiResponse(responseCode = "400", description = "게시글 수정 요청값 유효성 검증 실패"),
+            @ApiResponse(responseCode = "401", description = "인증 필요 - Access Token 누락 또는 유효하지 않은 토큰"),
+            @ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음 - 존재하지 않는 게시글")
+    })
+    @PutMapping("/{postId}")
+    public ResponseEntity<BaseResponse<PostResponse>> updatePost(
+            @PathVariable Long postId,
+            @RequestBody UpdatePostRequest request
+    ) {
+        PostResponse response = postService.updatePost(postId, request);
+        return BaseResponse.success(PostSuccessCode.POST_UPDATED, response);
+    }
+
+
+    // DELETE /posts/{id}
+    @Operation(summary = "게시글 삭제", description = "게시글을 삭제합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "게시글 삭제 성공"),
+            @ApiResponse(responseCode = "401", description = "인증 필요 - Access Token 누락 또는 유효하지 않은 토큰"),
+            @ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음 - 존재하지 않는 게시글")
+    })
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<BaseResponse<Void>> deletePost(
+            @PathVariable Long postId
+    ) {
+        postService.deletePost(postId);
+        return BaseResponse.success(PostSuccessCode.POST_DELETED, null);
     }
 }
