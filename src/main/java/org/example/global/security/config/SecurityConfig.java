@@ -1,7 +1,7 @@
 package org.example.global.security.config;
 
-import jakarta.servlet.http.HttpServletResponse;
 import org.example.global.security.auth.JwtAuthFilter;
+import org.example.global.security.jwt.handler.JwtAuthenticationEntryPoint;
 import org.example.global.security.oauth.OAuth2LoginSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,12 +20,16 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     public SecurityConfig(
             JwtAuthFilter jwtAuthFilter,
-            OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler) {
+            OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler,
+            JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint
+    ) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.oAuth2LoginSuccessHandler = oAuth2LoginSuccessHandler;
+        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
     }
 
     @Bean
@@ -38,7 +42,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/login", "/api/v1/auth/reissue").permitAll()
                         // 목록 조회, 단건 조회, 검색을 모두 열기
                         .requestMatchers(HttpMethod.GET, "/api/v1/posts/**").permitAll()
-                        // 게시글 작성과 좋아요 추가
+                        // 게시글 작성과 공감 추가
                         .requestMatchers(HttpMethod.POST, "/api/v1/posts", "/api/v1/posts/*/like").authenticated()
                         // 게시글 수정
                         .requestMatchers(HttpMethod.PUT, "/api/v1/posts/*").authenticated()
@@ -50,11 +54,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint((request, response, authException) -> response.sendError(
-                                        HttpServletResponse.SC_UNAUTHORIZED,
-                                        "인증이 필요합니다."
-                                )
-                        )
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .successHandler(oAuth2LoginSuccessHandler)

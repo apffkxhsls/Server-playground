@@ -73,7 +73,7 @@ public class AuthService {
     // 재발급: Refresh Token으로 Access Token 재발급
     @Transactional
     public TokenResponse reissue(String refreshTokenValue) {
-        Long userId = jwtService.verifyAndGetUserId(refreshTokenValue);
+        Long userId = jwtService.verifyRefreshToken(refreshTokenValue);
 
         RefreshToken storedRefreshToken = refreshTokenRepository
                 .findByToken(refreshTokenValue)

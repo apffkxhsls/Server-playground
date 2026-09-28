@@ -1,6 +1,7 @@
 package org.example.domain.post.service;
 
 
+import org.example.domain.post.domain.code.PostErrorCode;
 import org.example.domain.post.domain.entity.Post;
 import org.example.domain.post.domain.entity.PostReaction;
 import org.example.domain.post.domain.exception.PostNotFoundException;
@@ -8,7 +9,6 @@ import org.example.domain.post.domain.model.BoardType;
 import org.example.domain.post.domain.repository.PostReactionRepository;
 import org.example.domain.post.domain.repository.PostRepository;
 import org.example.domain.post.presentation.dto.request.CreatePostRequest;
-import org.example.domain.post.presentation.dto.request.PostReactionRequest;
 import org.example.domain.post.presentation.dto.request.UpdatePostRequest;
 import org.example.domain.post.presentation.dto.response.CreatePostResponse;
 import org.example.domain.post.presentation.dto.response.PostLikeCount;
@@ -16,6 +16,7 @@ import org.example.domain.post.presentation.dto.response.PostReactionResponse;
 import org.example.domain.post.presentation.dto.response.PostResponse;
 import org.example.domain.user.domain.entity.User;
 import org.example.domain.user.domain.repository.UserRepository;
+import org.example.global.exception.BaseException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -45,9 +46,9 @@ public class PostService {
 
     // CREATE
     @Transactional
-    public CreatePostResponse createPost(CreatePostRequest request) {
+    public CreatePostResponse createPost(CreatePostRequest request, Long userId) {
         // 2. Post 도메인 객체 생성
-        User user = userRepository.findById(request.userId())
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("작성자를 찾을 수 없습니다."));
         Post post = new Post(
                 request.title(),
@@ -68,8 +69,8 @@ public class PostService {
             maxAttempts = 3,
             backoff = @Backoff(delay = 100)
     )
-    public PostReactionResponse saveLikePost(Long postId, PostReactionRequest request) {
-        User user = userRepository.findById(request.userId())
+    public PostReactionResponse saveLikePost(Long postId, Long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         Post post = postRepository
                 .findByIdWithOptimisticLock(postId)
@@ -77,7 +78,7 @@ public class PostService {
         Optional<PostReaction> postReaction = postReactionRepository.findByUserAndPost(user, post);
 
         if (postReaction.isPresent()) {
-            throw new IllegalArgumentException("좋아요가 이미 눌러져있습니다.");
+            throw new IllegalArgumentException("공감이 이미 눌러져있습니다.");
         } else {
             PostReaction likeReaction = new PostReaction(user, post);
             postReactionRepository.save(likeReaction);
@@ -94,8 +95,8 @@ public class PostService {
             maxAttempts = 3,
             backoff = @Backoff(delay = 100)
     )
-    public PostReactionResponse deleteLikePost(Long postId, PostReactionRequest request) {
-        User user = userRepository.findById(request.userId())
+    public PostReactionResponse deleteLikePost(Long postId, Long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         Post post = postRepository
                 .findByIdWithOptimisticLock(postId)
@@ -103,7 +104,7 @@ public class PostService {
         Optional<PostReaction> postReaction = postReactionRepository.findByUserAndPost(user, post);
 
         if (postReaction.isEmpty()) {
-            throw new IllegalArgumentException("좋아요가 눌려있지 않습니다.");
+            throw new IllegalArgumentException("공감이 눌려있지 않습니다.");
         } else {
             postReactionRepository.delete(postReaction.get());
             long likeCount = postReactionRepository.countByPost(post);
@@ -156,9 +157,9 @@ public class PostService {
 
     // UPDATE
     @Transactional  // 이 범위 안에서 조회한 Post를 JPA가 계속 관리
-    public PostResponse updatePost(Long id, UpdatePostRequest request) {
-        request.validate();
+    public PostResponse updatePost(Long id, Long userId, UpdatePostRequest request) {
         Post post = findPostOrThrow(id);
+        validatePostOwner(post, userId);
         long likeCount = postReactionRepository.countByPost(post);
 
         post.update(request.newTitle(), request.newContent());
@@ -166,14 +167,24 @@ public class PostService {
     }
 
     // DELETE
-    public void deletePost(Long id) {
-        findPostOrThrow(id);
-        postRepository.deleteById(id);
+    @Transactional
+    public void deletePost(Long id, Long userId) {
+        Post post = findPostOrThrow(id);
+
+        validatePostOwner(post, userId);
+
+        postRepository.delete(post);
     }
 
     private Post findPostOrThrow(Long id) {
         Optional<Post> post = postRepository.findById(id);
         return post.orElseThrow(PostNotFoundException::new);
+    }
+
+    private void validatePostOwner(Post post, Long userId) {
+        if (!post.getUser().getId().equals(userId)) {
+            throw new BaseException(PostErrorCode.POST_FORBIDDEN);
+        }
     }
 
     // SEARCH

@@ -10,12 +10,8 @@ public record CreatePostRequest(
         @Size(max = 50, message = "제목은 50자를 초과할 수 없습니다.")
         String title,
 
-        @NotBlank(message = "내용은 필수입니다.")
         @Size(max = 500, message = "내용은 500자를 초과할 수 없습니다.")
         String content,
-
-        @NotNull(message = "작성자 ID는 필수입니다.")
-        Long userId,
 
         @NotNull(message = "게시판 선택은 필수입니다.")
         BoardType boardType

@@ -7,7 +7,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.domain.auth.domain.repository.BlacklistedAccessTokenRepository;
 import org.example.global.security.jwt.JwtService;
+import org.example.global.security.jwt.handler.JwtAuthenticationEntryPoint;
 import org.springframework.http.HttpHeaders;
+import org.springframework.lang.NonNull;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -22,34 +25,38 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final BlacklistedAccessTokenRepository blacklistedAccessTokenRepository;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     public JwtAuthFilter(
             JwtService jwtService,
-            BlacklistedAccessTokenRepository blacklistedAccessTokenRepository
+            BlacklistedAccessTokenRepository blacklistedAccessTokenRepository,
+            JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint
     ) {
         this.jwtService = jwtService;
         this.blacklistedAccessTokenRepository = blacklistedAccessTokenRepository;
+        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
     }
 
     @Override
     protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring("Bearer ".length()).trim();
 
             if (blacklistedAccessTokenRepository.existsByToken(token)) {
-                response.sendError(
-                        HttpServletResponse.SC_UNAUTHORIZED,
-                        "로그아웃된 토큰입니다."
+                jwtAuthenticationEntryPoint.commence(
+                        request,
+                        response,
+                        new InsufficientAuthenticationException("로그아웃된 토큰입니다.")
                 );
                 return;
             }
             try {
-                Long memberId = jwtService.verifyAndGetUserId(token);
+                Long memberId = jwtService.verifyAccessToken(token);
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                         String.valueOf(memberId), null, Collections.emptyList());
                 auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
