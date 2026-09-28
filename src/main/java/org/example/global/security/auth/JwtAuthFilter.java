@@ -49,7 +49,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 return;
             }
             try {
-                Long memberId = jwtService.verifyAndGetUserId(token);
+                Long memberId = jwtService.verifyAccessToken(token);
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                         String.valueOf(memberId), null, Collections.emptyList());
                 auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

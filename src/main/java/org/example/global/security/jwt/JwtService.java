@@ -33,6 +33,7 @@ public class JwtService {
         return JWT.create()
                 .withSubject(String.valueOf(userId))
                 .withClaim("email", email)
+                .withClaim("tokenType", TokenType.ACCESS.name())
                 .withIssuedAt(Date.from(now))
                 .withExpiresAt(Date.from(now.plusSeconds(accessTokenExpiresInSeconds)))
                 .sign(algorithm);
@@ -42,21 +43,37 @@ public class JwtService {
         Instant now = Instant.now();
         return JWT.create()
                 .withSubject(String.valueOf(userId))
+                .withClaim("tokenType", TokenType.REFRESH.name())
                 .withIssuedAt(Date.from(now))
                 .withExpiresAt(Date.from(now.plusSeconds(refreshTokenExpiresInSeconds)))
                 .sign(algorithm);
     }
 
-    public Long verifyAndGetUserId(String token) {
+    private Long verifyAndGetUserId(String token, TokenType expectedTokenType) {
         if (token == null || token.isBlank()) {
             throw new IllegalArgumentException("토큰이 없습니다.");
         }
+
         DecodedJWT jwt = JWT.require(algorithm).build().verify(token);
+
+        String tokenType = jwt.getClaim("tokenType").asString();
+        if (!expectedTokenType.name().equals(tokenType)) {
+            throw new IllegalArgumentException("토큰 용도가 올바르지 않습니다.");
+        }
+
         try {
             return Long.parseLong(jwt.getSubject());
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("JWT의 회원 정보가 올바르지 않습니다.");
         }
+    }
+
+    public Long verifyAccessToken(String token) {
+        return verifyAndGetUserId(token, TokenType.ACCESS);
+    }
+
+    public Long verifyRefreshToken(String token) {
+        return verifyAndGetUserId(token, TokenType.REFRESH);
     }
 
     public LocalDateTime getExpiresAt(String token) {
