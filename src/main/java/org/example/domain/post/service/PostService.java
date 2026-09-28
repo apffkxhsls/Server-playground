@@ -8,7 +8,6 @@ import org.example.domain.post.domain.model.BoardType;
 import org.example.domain.post.domain.repository.PostReactionRepository;
 import org.example.domain.post.domain.repository.PostRepository;
 import org.example.domain.post.presentation.dto.request.CreatePostRequest;
-import org.example.domain.post.presentation.dto.request.PostReactionRequest;
 import org.example.domain.post.presentation.dto.request.UpdatePostRequest;
 import org.example.domain.post.presentation.dto.response.CreatePostResponse;
 import org.example.domain.post.presentation.dto.response.PostLikeCount;
@@ -45,9 +44,9 @@ public class PostService {
 
     // CREATE
     @Transactional
-    public CreatePostResponse createPost(CreatePostRequest request) {
+    public CreatePostResponse createPost(CreatePostRequest request, Long userId) {
         // 2. Post 도메인 객체 생성
-        User user = userRepository.findById(request.userId())
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("작성자를 찾을 수 없습니다."));
         Post post = new Post(
                 request.title(),
@@ -68,8 +67,8 @@ public class PostService {
             maxAttempts = 3,
             backoff = @Backoff(delay = 100)
     )
-    public PostReactionResponse saveLikePost(Long postId, PostReactionRequest request) {
-        User user = userRepository.findById(request.userId())
+    public PostReactionResponse saveLikePost(Long postId, Long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         Post post = postRepository
                 .findByIdWithOptimisticLock(postId)
@@ -94,8 +93,8 @@ public class PostService {
             maxAttempts = 3,
             backoff = @Backoff(delay = 100)
     )
-    public PostReactionResponse deleteLikePost(Long postId, PostReactionRequest request) {
-        User user = userRepository.findById(request.userId())
+    public PostReactionResponse deleteLikePost(Long postId, Long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         Post post = postRepository
                 .findByIdWithOptimisticLock(postId)
