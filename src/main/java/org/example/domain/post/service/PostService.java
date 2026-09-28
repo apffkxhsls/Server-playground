@@ -1,6 +1,7 @@
 package org.example.domain.post.service;
 
 
+import org.example.domain.post.domain.code.PostErrorCode;
 import org.example.domain.post.domain.entity.Post;
 import org.example.domain.post.domain.entity.PostReaction;
 import org.example.domain.post.domain.exception.PostNotFoundException;
@@ -15,6 +16,7 @@ import org.example.domain.post.presentation.dto.response.PostReactionResponse;
 import org.example.domain.post.presentation.dto.response.PostResponse;
 import org.example.domain.user.domain.entity.User;
 import org.example.domain.user.domain.repository.UserRepository;
+import org.example.global.exception.BaseException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -155,24 +157,35 @@ public class PostService {
 
     // UPDATE
     @Transactional  // 이 범위 안에서 조회한 Post를 JPA가 계속 관리
-    public PostResponse updatePost(Long id, UpdatePostRequest request) {
-        request.validate();
+    public PostResponse updatePost(Long id, Long userId, UpdatePostRequest request) {
         Post post = findPostOrThrow(id);
+        request.validate();
         long likeCount = postReactionRepository.countByPost(post);
 
+        validatePostOwner(post, userId);
         post.update(request.newTitle(), request.newContent());
         return PostResponse.from(post, likeCount);
     }
 
     // DELETE
-    public void deletePost(Long id) {
-        findPostOrThrow(id);
-        postRepository.deleteById(id);
+    @Transactional
+    public void deletePost(Long id, Long userId) {
+        Post post = findPostOrThrow(id);
+
+        validatePostOwner(post, userId);
+
+        postRepository.delete(post);
     }
 
     private Post findPostOrThrow(Long id) {
         Optional<Post> post = postRepository.findById(id);
         return post.orElseThrow(PostNotFoundException::new);
+    }
+
+    private void validatePostOwner(Post post, Long userId) {
+        if (!post.getUser().getId().equals(userId)) {
+            throw new BaseException(PostErrorCode.POST_FORBIDDEN);
+        }
     }
 
     // SEARCH

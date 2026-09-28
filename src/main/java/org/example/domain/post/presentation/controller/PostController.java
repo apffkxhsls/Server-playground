@@ -196,14 +196,18 @@ public class PostController {
             @ApiResponse(responseCode = "200", description = "게시글 수정 성공"),
             @ApiResponse(responseCode = "400", description = "게시글 수정 요청값 유효성 검증 실패"),
             @ApiResponse(responseCode = "401", description = "인증 필요 - Access Token 누락 또는 유효하지 않은 토큰"),
+            @ApiResponse(responseCode = "403", description = "게시글 작성자가 아님"),
             @ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음 - 존재하지 않는 게시글")
     })
     @PutMapping("/{postId}")
     public ResponseEntity<BaseResponse<PostResponse>> updatePost(
             @PathVariable Long postId,
+            Authentication authentication,
             @RequestBody UpdatePostRequest request
     ) {
-        PostResponse response = postService.updatePost(postId, request);
+        Long userId = Long.parseLong(authentication.getName());
+
+        PostResponse response = postService.updatePost(postId, userId, request);
         return BaseResponse.success(PostSuccessCode.POST_UPDATED, response);
     }
 
@@ -219,13 +223,17 @@ public class PostController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "게시글 삭제 성공"),
             @ApiResponse(responseCode = "401", description = "인증 필요 - Access Token 누락 또는 유효하지 않은 토큰"),
+            @ApiResponse(responseCode = "403", description = "게시글 작성자가 아님"),
             @ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음 - 존재하지 않는 게시글")
     })
     @DeleteMapping("/{postId}")
     public ResponseEntity<BaseResponse<Void>> deletePost(
-            @PathVariable Long postId
+            @PathVariable Long postId,
+            Authentication authentication
     ) {
-        postService.deletePost(postId);
+        Long userId = Long.parseLong(authentication.getName());
+
+        postService.deletePost(postId, userId);
         return BaseResponse.success(PostSuccessCode.POST_DELETED, null);
     }
 }
