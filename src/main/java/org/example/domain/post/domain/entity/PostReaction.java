@@ -7,7 +7,7 @@ import org.example.global.entity.BaseTimeEntity;
 @Entity
 @Table(
         name = "post_reactions",
-        uniqueConstraints = @UniqueConstraint(  // 같은 사용자가 같은 게시글에 좋아요를 두 번 누르면 DB 수준에서도 막아줌
+        uniqueConstraints = @UniqueConstraint(  // 같은 사용자가 같은 게시글에 공감을 두 번 누르면 DB 수준에서도 막아줌
                 columnNames = {"post_id", "user_id"}
         ))
 public class PostReaction extends BaseTimeEntity {

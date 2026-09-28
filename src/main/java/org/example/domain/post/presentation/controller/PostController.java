@@ -46,11 +46,11 @@ public class PostController {
     }
 
     // POST /posts
-    @Operation(summary = "게시글 좋아요", description = "게시글 좋아요를 생성합니다.")
+    @Operation(summary = "게시글 공감", description = "게시글 공감를 생성합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "게시글 좋아요 성공"),
-            @ApiResponse(responseCode = "400", description = "좋아요 유효성 검증 실패"),
-            @ApiResponse(responseCode = "404", description = "좋아요를 누를 수 없음 - 존재하지 않는 ID로 요청한 경우")
+            @ApiResponse(responseCode = "201", description = "게시글 공감 성공"),
+            @ApiResponse(responseCode = "400", description = "공감 유효성 검증 실패"),
+            @ApiResponse(responseCode = "404", description = "공감를 누를 수 없음 - 존재하지 않는 ID로 요청한 경우")
     })
     @PostMapping("/{postId}/like")
     public ResponseEntity<BaseResponse<PostReactionResponse>> saveLikePost(
@@ -121,11 +121,11 @@ public class PostController {
     }
 
     // DELETE /posts/{postId}/like
-    @Operation(summary = "게시글 좋아요 취소", description = "게시글 좋아요를 취소합니다.")
+    @Operation(summary = "게시글 공감 취소", description = "게시글 공감를 취소합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "게시글 좋아요 취소 성공"),
-            @ApiResponse(responseCode = "400", description = "좋아요 취소 유효성 검증 실패"),
-            @ApiResponse(responseCode = "404", description = "좋아요를 취소할 수 없음 - 존재하지 않는 ID로 요청한 경우")
+            @ApiResponse(responseCode = "200", description = "게시글 공감 취소 성공"),
+            @ApiResponse(responseCode = "400", description = "공감 취소 유효성 검증 실패"),
+            @ApiResponse(responseCode = "404", description = "공감를 취소할 수 없음 - 존재하지 않는 ID로 요청한 경우")
     })
     @DeleteMapping("/{postId}/like")
     public ResponseEntity<BaseResponse<PostReactionResponse>> deleteLikePost(

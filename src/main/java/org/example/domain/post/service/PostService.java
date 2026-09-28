@@ -77,7 +77,7 @@ public class PostService {
         Optional<PostReaction> postReaction = postReactionRepository.findByUserAndPost(user, post);
 
         if (postReaction.isPresent()) {
-            throw new IllegalArgumentException("좋아요가 이미 눌러져있습니다.");
+            throw new IllegalArgumentException("공감이 이미 눌러져있습니다.");
         } else {
             PostReaction likeReaction = new PostReaction(user, post);
             postReactionRepository.save(likeReaction);
@@ -103,7 +103,7 @@ public class PostService {
         Optional<PostReaction> postReaction = postReactionRepository.findByUserAndPost(user, post);
 
         if (postReaction.isEmpty()) {
-            throw new IllegalArgumentException("좋아요가 눌려있지 않습니다.");
+            throw new IllegalArgumentException("공감이 눌려있지 않습니다.");
         } else {
             postReactionRepository.delete(postReaction.get());
             long likeCount = postReactionRepository.countByPost(post);

@@ -38,7 +38,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/login", "/api/v1/auth/reissue").permitAll()
                         // 목록 조회, 단건 조회, 검색을 모두 열기
                         .requestMatchers(HttpMethod.GET, "/api/v1/posts/**").permitAll()
-                        // 게시글 작성과 좋아요 추가
+                        // 게시글 작성과 공감 추가
                         .requestMatchers(HttpMethod.POST, "/api/v1/posts", "/api/v1/posts/*/like").authenticated()
                         // 게시글 수정
                         .requestMatchers(HttpMethod.PUT, "/api/v1/posts/*").authenticated()
