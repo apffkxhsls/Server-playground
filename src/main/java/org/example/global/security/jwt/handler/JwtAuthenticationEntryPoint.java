@@ -3,6 +3,7 @@ package org.example.global.security.jwt.handler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotNull;
 import org.example.global.code.GlobalErrorCode;
 import org.example.global.response.BaseResponse;
 import org.springframework.http.MediaType;
@@ -24,9 +25,9 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            AuthenticationException authException
+            @NotNull HttpServletRequest request,
+            @NotNull HttpServletResponse response,
+            @NotNull AuthenticationException authException
     ) throws IOException {
         response.setStatus(GlobalErrorCode.UNAUTHORIZED.getHttpStatus().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
