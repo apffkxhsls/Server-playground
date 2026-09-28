@@ -159,10 +159,10 @@ public class PostService {
     @Transactional  // 이 범위 안에서 조회한 Post를 JPA가 계속 관리
     public PostResponse updatePost(Long id, Long userId, UpdatePostRequest request) {
         Post post = findPostOrThrow(id);
+        validatePostOwner(post, userId);
         request.validate();
         long likeCount = postReactionRepository.countByPost(post);
 
-        validatePostOwner(post, userId);
         post.update(request.newTitle(), request.newContent());
         return PostResponse.from(post, likeCount);
     }
